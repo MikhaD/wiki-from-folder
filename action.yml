@@ -1,0 +1,28 @@
+name: Generate Wiki
+author: MikhaD
+description: Create a wiki from a folder of markdown files, with the option to include a custom sidebar.
+
+inputs:
+  directories:
+    description: The directory or list of directories to generate the wiki from.
+    default: ./docs
+  sidebar:
+    description: Whether or not you wish to generate a custom sidebar with categories based on the subdirectories of the input directory.
+    required: false
+    default: "false"
+  prefix-files-with-directory:
+    description: Whether or not to prefix file names with the directory they are in. This can be useful if you have multiple files with the same name in different directories, as github wikis completely ignore subdirectories and flatten everything out. Prefixed files will be named dir|filename.ext. Defaults to false.
+    required: false
+    default: "false"
+  ignore-footer:
+    description: Whether or not to ignore the _Footer file when generating the custom sidebar. Defaults to true.
+    required: false
+    default: "true"
+  sidebar-file-types:
+    description: A comma separated list of the types of file to include in the sidebar. Defaults to markdown files. List should be in the format .ext0, .ext1, .ext2
+    required: false
+    default: .md, .markdown
+
+runs:
+  using: node16
+  main: dist/index.js
