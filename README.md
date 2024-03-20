@@ -1,4 +1,5 @@
 # wiki-from-folder
+[![test coverage](https://mikhad.github.io/wiki-from-folder/badges/coverage.svg)](https://github.com/mikhad/wiki-from-folder/actions)
 This is a github action that creates a wiki from a folder of markdown files, with the option to include a custom sidebar.
 
 by default the _Footer file is ignored when creating a custom sidebar.

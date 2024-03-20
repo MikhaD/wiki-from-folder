@@ -10,23 +10,16 @@ on:
 
 jobs:
   test:
-    name: Test & Upload Coverage
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "21"
+      - name: Install
+        run: npm install
+      - name: Test and Coverage
+        run: npm run coverage
 
-    - name: Set up Node
-      uses: actions/setup-node@v2
-      with:
-        node-version: 16
-
-    - name: Install dependencies
-      run: npm i
-
-    - name: Run the tests
-      run: npm test
-
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v2
+      - name: Update Coverage Badge
+        uses: we-cli/coverage-badge-action@main

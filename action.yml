@@ -22,6 +22,10 @@ inputs:
     description: A comma separated list of the types of file to include in the sidebar. Defaults to markdown files. List should be in the format .ext0, .ext1, .ext2
     required: false
     default: .md, .markdown
+  branch-to-link-to:
+    description: The branch to link to when wiki files link to code, images etc. Defaults to the default branch of the repository.
+    required: false
+    default: ${{ github.event.repository.default_branch }}
 
 runs:
   using: node16
