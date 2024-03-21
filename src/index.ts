@@ -1,3 +1,3 @@
 import main from "./main";
 
-main();
+await main();

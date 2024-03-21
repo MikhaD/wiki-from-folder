@@ -1,5 +1,4 @@
 import type { DirectoryContents } from "./types";
-import cp from "child_process";
 import path from "path";
 import fs from "fs";
 
@@ -7,29 +6,10 @@ import { fromMarkdown } from "mdast-util-from-markdown";
 import { toMarkdown } from "mdast-util-to-markdown";
 import type { Image, Link, Definition } from "mdast";
 import { visit } from "unist-util-visit";
+import ac from "@actions/core";
 
 /** Match a valid email address */
 export const EMAIL_REGEX = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/m;
-/**
- * Initialize git to commit by setting user.email and user.name
- * @param email default: `action@github.com`
- * @param name default: `action`
- */
-export function initializeGit(email = "action@github.com", name = "actions-user") {
-	if (!EMAIL_REGEX.test(email)) throw new SyntaxError("Invalid email syntax");
-	cp.execSync(`git config --global user.email ${email}`);
-	cp.execSync(`git config --global user.name ${name}`);
-}
-/**
- * Add, commit and push a list of files with the given message
- * @param files The list of files to push
- * @param message The commit message
- */
-export function commitAndPush(files: string[], message: string) {
-	cp.execSync(`git add ${files.join(" ")}`);
-	cp.execSync(`git commit -m "${message}"`);
-	cp.execSync("git push");
-}
 
 /**
  * Convert a string containing a list of comma separated values, optionally enclosed in brackets or
@@ -61,8 +41,8 @@ export function parseDirectoryContents(dir: string, extensions: string[]): Direc
 
 	for (const file of data) {
 		if (file.isDirectory()) {
-			contents.dirs.push(parseDirectoryContents(`${dir}/${file.name}`, extensions));
-		} else if (file.isFile() && extensions.includes(path.extname(file.name).toLowerCase())) {
+			contents.dirs.push(parseDirectoryContents(path.join(dir, file.name), extensions));
+		} else if (file.isFile()) {
 			contents.files.push(file);
 		}
 	}
@@ -79,12 +59,24 @@ export function parseDirectoryContents(dir: string, extensions: string[]): Direc
 export function traverseDirs<T>(
 	contents: DirectoryContents,
 	data: T,
-	callback: (dir: DirectoryContents) => void
+	callback: (dir: DirectoryContents, data: T) => void
 ): void {
-	callback(contents);
+	callback(contents, data);
 	for (const dir of contents.dirs) {
 		traverseDirs(dir, data, callback);
 	}
+}
+
+/**
+ * Remove the file extension from a file name. If it has multiple extensions, such as `main.test.ts`
+ * only the last one will be removed.
+ * @param name - The file name to remove the extension from.
+ */
+export function removeFileExtension(name: string) {
+	if (path.extname(name).length > 0) {
+		name = name.slice(0, -path.extname(name).length);
+	}
+	return name;
 }
 
 /**
@@ -94,9 +86,7 @@ export function traverseDirs<T>(
  */
 export function headerFromFileName(name: string) {
 	name = name.replace(/[-_]/g, " ");
-	if (path.extname(name).length > 0) {
-		name = name.slice(0, -path.extname(name).length);
-	}
+	name = removeFileExtension(name);
 	return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
 }
 
@@ -104,9 +94,15 @@ export function headerFromFileName(name: string) {
  * Standardize a file name by replacing spaces and underscores with hyphens and converting it to
  * lowercase.
  * @param name - The file name to standardize.
+ * @param file_path - The path to the file to standardize. If specified, the file name will be
+ * joined to the path using a pipe character. The result will look like `path|to|file-name.md`.
  */
-export function standardizeFileName(name: string) {
+export function standardizeFileName(name: string, file_path?: string) {
 	name = name.replace(/[ _]/g, "-");
+	if (file_path) {
+		name = path.join(file_path, name);
+		name = name.replace(/\//g, "|");
+	}
 	return name.toLowerCase();
 
 }
@@ -118,8 +114,8 @@ export function standardizeFileName(name: string) {
 export function isLocalUrl(url: string): boolean {
 	try {
 		const parsedUrl = new URL(url);
-		// if it is a file link or a windows absolute path
-		return parsedUrl.protocol.startsWith("file") || parsedUrl.protocol.length < 3;
+		// if it is a file link || a windows absolute path
+		return parsedUrl.protocol.startsWith("file") || parsedUrl.protocol.length <= 2;
 	}
 	catch (e) {
 		return true;
@@ -131,27 +127,51 @@ export function isLocalUrl(url: string): boolean {
  * @param file - The file path to find the highest level directory of.
  */
 export function highestLevelDir(file: string): string {
-	return path.normalize(file).split(path.sep).shift()!;
+	let result = path.normalize(file).split(path.sep).shift();
+	if (result === file) {
+		result = ".";
+	}
+	if (result === "") {
+		result = "/";
+	}
+	return result!;
 }
 
-export function formatLocalLink(url: string, repo: string, currentDir: string, extensions: string[]): string {
+/**
+ * Format a link to a local file to work with github wikis. If the file is in one of the folders
+ * that the wiki is being generated from, and is one of the file types being turned into wiki pages,
+ * the link will be formatted as a wiki link. If it is not one of the file types being turned into
+ * wiki pages, or is in the repo but not in one of the folders the wiki is being generated from, the
+ * link will be formatted as a link to the file in the repo. If the file is not in the repo, the
+ * link will be left as is.
+ * @param url - The link to format.
+ * @param repo - The name of the repo the action is running in in the form `owner/repo`.
+ * @param currentDir - The current directory of the file being formatted.
+ * @param extensions - A list of file extensions to be be considered wiki files (linked to the wiki instead of the repo).
+ * @param prefixWithDir - Whether to prefix the file name being linked to with the directory it is in.
+ */
+export function formatLocalLink(url: string, repo: string, currentDir: string, extensions: string[], prefixWithDir: boolean): string {
 	if (isLocalUrl(url)) {
 		const newPath = path.join(currentDir, url);
 		if (highestLevelDir(newPath) === highestLevelDir(currentDir)) {
 			let fileName = path.basename(url);
+			// This is a link to another wiki page
 			if (extensions.includes(path.extname(fileName))) {
-				fileName = standardizeFileName(fileName);
-				return path.join("/", repo, "wiki", fileName);
+				fileName = standardizeFileName(fileName, prefixWithDir ? currentDir : undefined);
+				return wikiURL(fileName, repo);
 			}
+			// This is in the dir the wiki is being generated from, but not a wiki page
 			return path.join("/", repo, "blob/main", newPath);
 		}
 		if (newPath.startsWith("../")) {
-			console.warn(`[WARN] ${url} is not in the project directory, leaving as is.`);
+			// this links to something outside the project directory
+			ac.warning(`[WARN] ${url} is not in the project directory, leaving as is.`);
 		} else {
 			// This is in the repo itself
 			return path.join("/", repo, "blob/main", newPath);
 		}
 	}
+	// this is an external url to a web resource or something else
 	return url;
 }
 
@@ -160,14 +180,26 @@ export function formatLocalLink(url: string, repo: string, currentDir: string, e
  * owner/repo/wiki so they work with github wikis, and change all linked file names to match the
  * formatted file names.
  * @param path - The path to the markdown file to format.
- * @param repoName - The name of the repo the action is running in in the form `owner/repo`.
+ * @param repo - The name of the repo the action is running in in the form `owner/repo`.
+ * @param currentDir - The current directory of the file being formatted.
+ * @param extensions - A list of file extensions to be be considered wiki files (linked to the wiki instead of the repo).
+ * @param prefixWithFileWithDir - Whether to prefix the file name with the directory it is in.
  */
-export function formatLinksInFile(text: string, repo: string, currentDir: string, extensions: string[]) {
+export function formatLinksInFile(text: string, repo: string, currentDir: string, extensions: string[], prefixWithFileWithDir: boolean) {
 	const tree = fromMarkdown(text);
 	visit(tree, ["image", "link", "definition"], function(node) {
 		node = node as Image | Link | Definition;
-		node.url = formatLocalLink(node.url, repo, currentDir, extensions);
+		node.url = formatLocalLink(node.url, repo, currentDir, extensions, prefixWithFileWithDir);
 	});
 
-	console.log(toMarkdown(tree));
+	return toMarkdown(tree);
+}
+
+/**
+ * Generate a local wiki URL for a file in the repo.
+ * @param fileName - The name of the file to generate a URL for. It will be standardized.
+ * @param repo - The name of the repo the action is running in in the form `owner/repo`.
+ */
+export function wikiURL(fileName: string, repo: string) {
+	return path.join("/", repo, "wiki", removeFileExtension(standardizeFileName(fileName)));
 }

@@ -14,10 +14,6 @@ inputs:
     description: Whether or not to prefix file names with the directory they are in. This can be useful if you have multiple files with the same name in different directories, as github wikis completely ignore subdirectories and flatten everything out. Prefixed files will be named dir|filename.ext. Defaults to false.
     required: false
     default: "false"
-  ignore-footer:
-    description: Whether or not to ignore the _Footer file when generating the custom sidebar. Defaults to true.
-    required: false
-    default: "true"
   sidebar-file-types:
     description: A comma separated list of the types of file to include in the sidebar. Defaults to markdown files. List should be in the format .ext0, .ext1, .ext2
     required: false
@@ -26,6 +22,10 @@ inputs:
     description: The branch to link to when wiki files link to code, images etc. Defaults to the default branch of the repository.
     required: false
     default: ${{ github.event.repository.default_branch }}
+  clear-wiki:
+    description: Whether or not to clear the wiki before generating the new files. Defaults to false. This is useful if you do not want wiki pages from anywhere other than this action.
+    required: false
+    default: "false"
 
 runs:
   using: node16

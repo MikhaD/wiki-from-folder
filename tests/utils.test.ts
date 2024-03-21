@@ -1,8 +1,7 @@
 import { expect } from "chai";
-import { EMAIL_REGEX, commitAndPush, formatAsList, headerFromFileName, initializeGit, isLocalUrl, standardizeFileName } from "../src/utils.js";
-// import fs from "fs";
-import child_process from "child_process";
+import { EMAIL_REGEX, formatAsList, formatLocalLink, headerFromFileName, highestLevelDir, isLocalUrl, removeFileExtension, standardizeFileName, traverseDirs, wikiURL } from "../src/utils.js";
 import sinon from "sinon";
+import ac from "@actions/core";
 
 describe("utils.ts", () => {
 	it("EMAIL_REGEX", () => {
@@ -66,6 +65,66 @@ describe("utils.ts", () => {
 		});
 	});
 
+	describe("standardizeFileName", () => {
+		it("without a file path", () => {
+			expect(standardizeFileName("file.md")).to.equal("file.md");
+			expect(standardizeFileName("file name.md")).to.equal("file-name.md");
+			expect(standardizeFileName("the_FILE-with The naMe.md")).to.equal("the-file-with-the-name.md");
+		});
+
+		it("with a file path", () => {
+			expect(standardizeFileName("file.md", "path/to/THE/")).to.equal("path|to|the|file.md");
+			expect(standardizeFileName("file name.md", "path/TO/the")).to.equal("path|to|the|file-name.md");
+			expect(standardizeFileName("the_FILE-with The naMe.md", "Path/to")).to.equal("path|to|the-file-with-the-name.md");
+		});
+	});
+
+	describe("formatLocalLink", () => {
+		let repo = "owner/repo";
+		let extensions = [".md", ".markdown"];
+		it("is another file being made into a wiki page", () => {
+			expect(formatLocalLink("FILE_NAME1.md", repo, "path/to", extensions, false)).
+				to.equal("/owner/repo/wiki/file-name1");
+			expect(formatLocalLink("FILE NAME2.markdown", repo, "path/to", extensions, false))
+				.to.equal("/owner/repo/wiki/file-name2");
+			expect(formatLocalLink("FILE_NAME3.md", repo, "path/to", extensions, true))
+				.to.equal("/owner/repo/wiki/path|to|file-name3");
+			expect(formatLocalLink("../FILE NAME4.markdown", repo, "path/to/", extensions, true))
+				.to.equal("/owner/repo/wiki/path|file-name4");
+		});
+		it("is in wiki dir, but not a wiki page", () => {
+			expect(formatLocalLink("FILE_NAME.png", repo, "path/to/", extensions, false))
+				.to.equal("/owner/repo/blob/main/path/to/FILE_NAME.png");
+			expect(formatLocalLink("../FILE_NAME.png", repo, "path/to", extensions, true))
+				.to.equal("/owner/repo/blob/main/path/FILE_NAME.png");
+		});
+		it("is in the repo", () => {
+			expect(formatLocalLink("../../src/index.ts", repo, "path/to", extensions, false))
+				.to.equal("/owner/repo/blob/main/src/index.ts");
+			expect(formatLocalLink("../../src/index.ts", repo, "path/to", extensions, true))
+				.to.equal("/owner/repo/blob/main/src/index.ts");
+		});
+		it("is local but not in the project directory", () => {
+			const warningStub = sinon.stub(ac, "warning");
+			expect(formatLocalLink("../../../file.md", repo, "path/to", extensions, false))
+				.to.equal("../../../file.md");
+			expect(warningStub.calledOnce).to.be.true;
+			expect(warningStub.calledWith("[WARN] ../../../file.md is not in the project directory, leaving as is."))
+				.to.be.true;
+			expect(formatLocalLink("../../../outside/file.ts", repo, "path/to", extensions, true))
+				.to.equal("../../../outside/file.ts");
+			expect(warningStub.calledTwice).to.be.true;
+			expect(warningStub.calledWith("[WARN] ../../../outside/file.ts is not in the project directory, leaving as is."))
+				.to.be.true;
+		});
+		it("is an external url", () => {
+			expect(formatLocalLink("https://example.com/image.png", repo, "path/to", extensions, false))
+				.to.equal("https://example.com/image.png");
+			expect(formatLocalLink("https://example.com/image.png", repo, "path/to", extensions, true))
+				.to.equal("https://example.com/image.png");
+		});
+	});
+
 	it("headerFromFileName", () => {
 		expect(headerFromFileName("file.md")).to.equal("File");
 		expect(headerFromFileName("file name.md")).to.equal("File name");
@@ -73,54 +132,33 @@ describe("utils.ts", () => {
 		expect(headerFromFileName("The other file name")).to.equal("The other file name");
 	});
 
-	it("standardizeFileName", () => {
-		expect(standardizeFileName("file.md")).to.equal("file.md");
-		expect(standardizeFileName("file name.md")).to.equal("file-name.md");
-		expect(standardizeFileName("the_FILE-with The naMe.md")).to.equal("the-file-with-the-name.md");
+	it("highestLevelDir", () => {
+		expect(highestLevelDir("path/to/file.md")).to.equal("path");
+		expect(highestLevelDir("file.md")).to.equal(".");
+		expect(highestLevelDir("/path/to/file.md")).to.equal("/");
+		expect(highestLevelDir("../path/to/file.md")).to.equal("..");
+	});
+
+	it("wikiURL", () => {
+		expect(wikiURL("file.md", "owner/repo")).to.equal("/owner/repo/wiki/file");
+		expect(wikiURL("File Name.md", "/owner/repo")).to.equal("/owner/repo/wiki/file-name");
+		expect(wikiURL("FILE_NAME", "/owner/repo/")).to.equal("/owner/repo/wiki/file-name");
+		expect(wikiURL("main.test.ts", "/owner/repo/")).to.equal("/owner/repo/wiki/main.test");
+	});
+
+	it("removeFileExtension", () => {
+		expect(removeFileExtension("file.md")).to.equal("file");
+		expect(removeFileExtension("file")).to.equal("file");
+		expect(removeFileExtension("file.test.ts")).to.equal("file.test");
+		expect(removeFileExtension("")).to.equal("");
+	});
+
+	it("traverseDirs", () => {
+		// expect(traverseDirs(contents, data, callback));
 	});
 });
 
-const execSyncStub = sinon.stub(child_process, "execSync");
-
-
-describe("Git functions", () => {
-	beforeEach(() => {
-		execSyncStub.resetHistory();
-	});
-
-	describe("initializeGit", () => {
-		it("No parameters", () => {
-			expect(initializeGit()).to.be.undefined;
-			expect(execSyncStub.callCount).to.equal(2);
-			expect(execSyncStub.calledWith("git config --global user.email action@github.com")).to.be.true;
-			expect(execSyncStub.calledWith("git config --global user.name actions-user")).to.be.true;
-		});
-		it("Valid parameters", () => {
-			expect(initializeGit("bob@bob.bob", "bob")).to.be.undefined;
-			expect(execSyncStub.callCount).to.equal(2);
-			expect(execSyncStub.calledWith("git config --global user.email bob@bob.bob")).to.be.true;
-			expect(execSyncStub.calledWith("git config --global user.name bob")).to.be.true;
-		});
-		it("Invalid parameters", () => {
-			expect(() => { initializeGit("bob@bob.b(o)b", "bob"); }).to.throw("Invalid email syntax");
-			expect(execSyncStub.callCount).to.equal(0);
-		});
-	});
-
-	describe("commitAndPush", () => {
-		it("One file", () => {
-			expect(commitAndPush(["./README.md"], "changed shit")).to.be.undefined;
-			expect(execSyncStub.callCount).to.equal(3);
-			expect(execSyncStub.calledWith("git add ./README.md")).to.be.true;
-			expect(execSyncStub.calledWith("git commit -m \"changed shit\"")).to.be.true;
-			expect(execSyncStub.calledWith("git push")).to.be.true;
-		});
-		it("Multiple files", () => {
-			expect(commitAndPush(["./README.md", " file.md"], "changed shit")).to.be.undefined;
-			expect(execSyncStub.callCount).to.equal(3);
-			expect(execSyncStub.calledWith("git add ./README.md  file.md")).to.be.true;
-			expect(execSyncStub.calledWith("git commit -m \"changed shit\"")).to.be.true;
-			expect(execSyncStub.calledWith("git push")).to.be.true;
-		});
-	});
-});
+import cp from "child_process";
+console.log("############################################");
+console.log(cp.execSync("pwd"));
+console.log("############################################");
