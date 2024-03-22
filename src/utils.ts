@@ -26,12 +26,10 @@ export function formatAsList(str: string) {
 
 /**
  * Take a directory path and return a DirectoryContents object containing the path, a list of
- * subdirectories as DirectoryContents objects, and a list of files that match the specified
- * extensions.
+ * subdirectories as DirectoryContents objects, and a list of files as Dirent objects.
  * @param dir - The path to the directory to parse
- * @param extensions - A list of file extensions to include in the files list
  */
-export function parseDirectoryContents(dir: string, extensions: string[]): DirectoryContents {
+export function parseDirectoryContents(dir: string): DirectoryContents {
 	const data = fs.readdirSync(dir, { withFileTypes: true });
 	const contents: DirectoryContents = {
 		path: dir,
@@ -41,7 +39,7 @@ export function parseDirectoryContents(dir: string, extensions: string[]): Direc
 
 	for (const file of data) {
 		if (file.isDirectory()) {
-			contents.dirs.push(parseDirectoryContents(path.join(dir, file.name), extensions));
+			contents.dirs.push(parseDirectoryContents(path.join(dir, file.name)));
 		} else if (file.isFile()) {
 			contents.files.push(file);
 		}
@@ -68,11 +66,12 @@ export function traverseDirs<T>(
 }
 
 /**
- * Remove the file extension from a file name. If it has multiple extensions, such as `main.test.ts`
- * only the last one will be removed.
+ * Return a file or file path's base name without the extension. If it has multiple extensions, such
+ * as `main.test.ts` only the last one will be removed.
  * @param name - The file name to remove the extension from.
  */
-export function removeFileExtension(name: string) {
+export function StripName(name: string) {
+	name = path.basename(name);
 	if (path.extname(name).length > 0) {
 		name = name.slice(0, -path.extname(name).length);
 	}
@@ -86,7 +85,7 @@ export function removeFileExtension(name: string) {
  */
 export function headerFromFileName(name: string) {
 	name = name.replace(/[-_]/g, " ");
-	name = removeFileExtension(name);
+	name = StripName(name);
 	return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
 }
 
@@ -154,11 +153,13 @@ export function formatLocalLink(url: string, repo: string, currentDir: string, e
 	if (isLocalUrl(url)) {
 		const newPath = path.join(currentDir, url);
 		if (highestLevelDir(newPath) === highestLevelDir(currentDir)) {
-			let fileName = path.basename(url);
+			// let fileName = path.basename(url);
 			// This is a link to another wiki page
-			if (extensions.includes(path.extname(fileName))) {
-				fileName = standardizeFileName(fileName, prefixWithDir ? currentDir : undefined);
-				return wikiURL(fileName, repo);
+			if (extensions.includes(path.extname(url))) {
+				currentDir = path.join(currentDir, path.dirname(url));
+				let file = path.basename(url);
+				file = standardizeFileName(file, prefixWithDir ? currentDir : undefined);
+				return wikiURL(file, repo);
 			}
 			// This is in the dir the wiki is being generated from, but not a wiki page
 			return path.join("/", repo, "blob/main", newPath);
@@ -183,13 +184,13 @@ export function formatLocalLink(url: string, repo: string, currentDir: string, e
  * @param repo - The name of the repo the action is running in in the form `owner/repo`.
  * @param currentDir - The current directory of the file being formatted.
  * @param extensions - A list of file extensions to be be considered wiki files (linked to the wiki instead of the repo).
- * @param prefixWithFileWithDir - Whether to prefix the file name with the directory it is in.
+ * @param prefixFileWithDir - Whether to prefix the file name with the directory it is in.
  */
-export function formatLinksInFile(text: string, repo: string, currentDir: string, extensions: string[], prefixWithFileWithDir: boolean) {
+export function formatLinksInFile(text: string, repo: string, currentDir: string, extensions: string[], prefixFileWithDir: boolean) {
 	const tree = fromMarkdown(text);
 	visit(tree, ["image", "link", "definition"], function(node) {
 		node = node as Image | Link | Definition;
-		node.url = formatLocalLink(node.url, repo, currentDir, extensions, prefixWithFileWithDir);
+		node.url = formatLocalLink(node.url, repo, currentDir, extensions, prefixFileWithDir);
 	});
 
 	return toMarkdown(tree);
@@ -201,5 +202,5 @@ export function formatLinksInFile(text: string, repo: string, currentDir: string
  * @param repo - The name of the repo the action is running in in the form `owner/repo`.
  */
 export function wikiURL(fileName: string, repo: string) {
-	return path.join("/", repo, "wiki", removeFileExtension(standardizeFileName(fileName)));
+	return path.join("/", repo, "wiki", StripName(standardizeFileName(fileName)));
 }

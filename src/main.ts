@@ -37,10 +37,10 @@ export default async function main() {
 		if (inputs.directories.length > 1) {
 			contents.path = "";
 			for (const dir of inputs.directories) {
-				contents.dirs.push(parseDirectoryContents(dir, inputs.sidebarFileTypes));
+				contents.dirs.push(parseDirectoryContents(dir));
 			}
 		} else {
-			contents = parseDirectoryContents(inputs.directories[0], inputs.sidebarFileTypes);
+			contents = parseDirectoryContents(inputs.directories[0]);
 		}
 
 		const data: Data = {

@@ -24,7 +24,7 @@ export async function configureGit(email = "action@github.com", name = "actions-
 	errorAccumulator += await exec.exec(`git config --global user.email ${email}`);
 	errorAccumulator += await exec.exec(`git config --global user.name ${name}`);
 	if (errorAccumulator > 0) {
-		throw new ExecError("Failed to initialize git");
+		throw new ExecError(`Failed to initialize git [${errorAccumulator}]`);
 	}
 }
 /**
@@ -39,7 +39,7 @@ export async function commitAndPush(files: string[], message: string) {
 	errorAccumulator += await exec.exec(`git commit -m "${message}"`);
 	errorAccumulator += await exec.exec("git push");
 	if (errorAccumulator > 0) {
-		throw new ExecError("Failed to commit and push");
+		throw new ExecError(`Failed to commit and push [${errorAccumulator}]`);
 	}
 }
 
@@ -57,6 +57,6 @@ export async function cloneWiki(repo: string, cloneTo: string, clear: boolean = 
 		errorAccumulator += await exec.exec("rm", ["-r", `${cloneTo}/*`]);
 	}
 	if (errorAccumulator > 0) {
-		throw new ExecError("Failed to clone wiki");
+		throw new ExecError(`Failed to clone wiki [${errorAccumulator}]`);
 	}
 }
