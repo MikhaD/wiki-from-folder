@@ -12,8 +12,8 @@ If you wish to have a custom footer, you can include a file named `_footer.md` i
 - option to generate index files for directories that have links to all the included files and sub indexes for subdirectories
 - Option to choose which branch linked things should be linked to
 - Account for home page
-- Account for empty directories/directories with no markdown files
 - Add more async for reading and writing files
 - Keep folder structure intact when pushing to the wiki, as it doesn't matter to github
+- Rework formatLinksInFile so it is less reliant on all the parameters of formatLocalLinks
 
 Need to get an access token for the wiki

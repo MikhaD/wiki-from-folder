@@ -84,57 +84,69 @@ describe("utils.ts", () => {
 
 	describe("formatLocalLink", () => {
 		let repo = "owner/repo";
+		let branch = "main";
 		let extensions = [".md", ".markdown"];
 		it("is another file being made into a wiki page", () => {
-			expect(formatLocalLink("FILE_NAME1.md", repo, "path/to", extensions, false)).
+			expect(formatLocalLink("FILE_NAME1.md", repo, branch, "path/to", extensions, false)).
 				to.equal("/owner/repo/wiki/file-name1");
-			expect(formatLocalLink("FILE NAME2.markdown", repo, "path/to", extensions, false))
+			expect(formatLocalLink("FILE NAME2.markdown", repo, branch, "path/to", extensions, false))
 				.to.equal("/owner/repo/wiki/file-name2");
-			expect(formatLocalLink("../FILE NAME3.markdown", repo, "path/to/", extensions, false))
+			expect(formatLocalLink("../FILE NAME3.markdown", repo, branch, "path/to/", extensions, false))
 				.to.equal("/owner/repo/wiki/file-name3");
-			expect(formatLocalLink("more/dirs/FILE NAME4.markdown", repo, "path/to/", extensions, false))
+			expect(formatLocalLink("more/dirs/FILE NAME4.markdown", repo, branch, "path/to/", extensions, false))
 				.to.equal("/owner/repo/wiki/file-name4");
-			expect(formatLocalLink("../more/dirs/FILE NAME5.markdown", repo, "path/to/", extensions, false))
+			expect(formatLocalLink("../more/dirs/FILE NAME5.markdown", repo, branch, "path/to/", extensions, false))
 				.to.equal("/owner/repo/wiki/file-name5");
-			expect(formatLocalLink("FILE_NAME6.md", repo, "path/to", extensions, true))
+			expect(formatLocalLink("FILE_NAME6.md", repo, branch, "path/to", extensions, true))
 				.to.equal("/owner/repo/wiki/path|to|file-name6");
-			expect(formatLocalLink("../FILE NAME7.markdown", repo, "path/to/", extensions, true))
+			expect(formatLocalLink("../FILE NAME7.markdown", repo, branch, "path/to/", extensions, true))
 				.to.equal("/owner/repo/wiki/path|file-name7");
-			expect(formatLocalLink("more/dirs/FILE NAME8.markdown", repo, "path/to/", extensions, true))
+			expect(formatLocalLink("more/dirs/FILE NAME8.markdown", repo, branch, "path/to/", extensions, true))
 				.to.equal("/owner/repo/wiki/path|to|more|dirs|file-name8");
-			expect(formatLocalLink("../more/dirs/FILE NAME9.markdown", repo, "path/to/", extensions, true))
+			expect(formatLocalLink("../more/dirs/FILE NAME9.markdown", repo, branch, "path/to/", extensions, true))
 				.to.equal("/owner/repo/wiki/path|more|dirs|file-name9");
 		});
 		it("is in wiki dir, but not a wiki page", () => {
-			expect(formatLocalLink("FILE_NAME.png", repo, "path/to/", extensions, false))
+			expect(formatLocalLink("FILE_NAME.png", repo, branch, "path/to/", extensions, false))
 				.to.equal("/owner/repo/blob/main/path/to/FILE_NAME.png");
-			expect(formatLocalLink("../FILE_NAME.png", repo, "path/to", extensions, true))
+			expect(formatLocalLink("../FILE_NAME.png", repo, branch, "path/to", extensions, true))
 				.to.equal("/owner/repo/blob/main/path/FILE_NAME.png");
 		});
 		it("is in the repo", () => {
-			expect(formatLocalLink("../../src/index.ts", repo, "path/to", extensions, false))
+			expect(formatLocalLink("../../src/index.ts", repo, branch, "path/to", extensions, false))
 				.to.equal("/owner/repo/blob/main/src/index.ts");
-			expect(formatLocalLink("../../src/index.ts", repo, "path/to", extensions, true))
+			expect(formatLocalLink("../../src/index.ts", repo, branch, "path/to", extensions, true))
 				.to.equal("/owner/repo/blob/main/src/index.ts");
 		});
 		it("is local but not in the project directory", () => {
 			const warningStub = sinon.stub(ac, "warning");
-			expect(formatLocalLink("../../../file.md", repo, "path/to", extensions, false))
+			expect(formatLocalLink("../../../file.md", repo, branch, "path/to", extensions, false))
 				.to.equal("../../../file.md");
 			expect(warningStub.calledOnce).to.be.true;
 			expect(warningStub.calledWith("[WARN] ../../../file.md is not in the project directory, leaving as is."))
 				.to.be.true;
-			expect(formatLocalLink("../../../outside/file.ts", repo, "path/to", extensions, true))
+			expect(formatLocalLink("../../../outside/file.ts", repo, branch, "path/to", extensions, true))
 				.to.equal("../../../outside/file.ts");
 			expect(warningStub.calledTwice).to.be.true;
 			expect(warningStub.calledWith("[WARN] ../../../outside/file.ts is not in the project directory, leaving as is."))
 				.to.be.true;
 		});
 		it("is an external url", () => {
-			expect(formatLocalLink("https://example.com/image.png", repo, "path/to", extensions, false))
+			expect(formatLocalLink("https://example.com/image.png", repo, branch, "path/to", extensions, false))
 				.to.equal("https://example.com/image.png");
-			expect(formatLocalLink("https://example.com/image.png", repo, "path/to", extensions, true))
+			expect(formatLocalLink("https://example.com/image.png", repo, branch, "path/to", extensions, true))
 				.to.equal("https://example.com/image.png");
+		});
+		it("Uses a different branch", () => {
+			branch = "master";
+			expect(formatLocalLink("FILE_NAME.png", repo, branch, "path/to/", extensions, false))
+				.to.equal("/owner/repo/blob/master/path/to/FILE_NAME.png");
+			expect(formatLocalLink("../FILE_NAME.png", repo, branch, "path/to", extensions, true))
+				.to.equal("/owner/repo/blob/master/path/FILE_NAME.png");
+			expect(formatLocalLink("../../src/index.ts", repo, branch, "path/to", extensions, false))
+				.to.equal("/owner/repo/blob/master/src/index.ts");
+			expect(formatLocalLink("../../src/index.ts", repo, branch, "path/to", extensions, true))
+				.to.equal("/owner/repo/blob/master/src/index.ts");
 		});
 	});
 
@@ -144,6 +156,7 @@ describe("utils.ts", () => {
 		let extensions = [".md", ".markdown"];
 
 		describe("formats links", () => {
+			const branch = "main";
 			const text = `# Links
 
 [Link to file 1](file1.md).
@@ -157,7 +170,7 @@ describe("utils.ts", () => {
 - [Link to file 9](../images/image.png).
 - [Link to file 10](../../images/image.png).`;
 			it("without prefixing", () => {
-				expect(formatLinksInFile(text, repo, currentDir, extensions, false)).to.equal(`# Links
+				expect(formatLinksInFile(text, repo, branch, currentDir, extensions, false)).to.equal(`# Links
 
 [Link to file 1](/owner/repo/wiki/file1).
 [Link to file 2](/owner/repo/wiki/file2).
@@ -173,7 +186,7 @@ describe("utils.ts", () => {
 `);
 			});
 			it("with prefixing", () => {
-				expect(formatLinksInFile(text, repo, currentDir, extensions, true)).to.equal(`# Links
+				expect(formatLinksInFile(text, repo, branch, currentDir, extensions, true)).to.equal(`# Links
 
 [Link to file 1](/owner/repo/wiki/path|to|file1).
 [Link to file 2](/owner/repo/wiki/path|file2).
@@ -189,14 +202,107 @@ describe("utils.ts", () => {
 `);
 			});
 		});
-		it("formats images", () => {
+		describe("formats images", () => {
+			const branch = "master";
+			const text = `# Links
 
+![Image 1](file1.md).
+![Image 2](../file2.md).
+![Image 3](../other/file3.md).
+- ![Image 4](doc/file4.markdown).
+- ![Image 5](../../file5.md).
+- ![Image 6](../../../file6.md).
+- ![Image 7](https://example.com/file7.md).
+- ![Image 8](images/image.png).
+- ![Image 9](../images/image.png).
+- [![Image 10](../images/image.png)](../../index.ts).
+- ![Image 11](../../images/image.png).`;
+			it("without prefixing", () => {
+				expect(formatLinksInFile(text, repo, branch, currentDir, extensions, false)).to.equal(`# Links
+
+![Image 1](/owner/repo/wiki/file1).
+![Image 2](/owner/repo/wiki/file2).
+![Image 3](/owner/repo/wiki/file3).
+
+* ![Image 4](/owner/repo/wiki/file4).
+* ![Image 5](/owner/repo/blob/master/file5.md).
+* ![Image 6](../../../file6.md).
+* ![Image 7](https://example.com/file7.md).
+* ![Image 8](/owner/repo/blob/master/path/to/images/image.png).
+* ![Image 9](/owner/repo/blob/master/path/images/image.png).
+* [![Image 10](/owner/repo/blob/master/path/images/image.png)](/owner/repo/blob/master/index.ts).
+* ![Image 11](/owner/repo/blob/master/images/image.png).
+`);
+			});
+			it("with prefixing", () => {
+				expect(formatLinksInFile(text, repo, branch, currentDir, extensions, true)).to.equal(`# Links
+
+![Image 1](/owner/repo/wiki/path|to|file1).
+![Image 2](/owner/repo/wiki/path|file2).
+![Image 3](/owner/repo/wiki/path|other|file3).
+
+* ![Image 4](/owner/repo/wiki/path|to|doc|file4).
+* ![Image 5](/owner/repo/blob/master/file5.md).
+* ![Image 6](../../../file6.md).
+* ![Image 7](https://example.com/file7.md).
+* ![Image 8](/owner/repo/blob/master/path/to/images/image.png).
+* ![Image 9](/owner/repo/blob/master/path/images/image.png).
+* [![Image 10](/owner/repo/blob/master/path/images/image.png)](/owner/repo/blob/master/index.ts).
+* ![Image 11](/owner/repo/blob/master/images/image.png).
+`);
+			});
 		});
-		it("formats definitions", () => {
+		describe("formats definitions", () => {
+			const branch = "dev";
+			const text = `# Links
 
-		});
-		it("works with mixed types", () => {
+This is [some][def_1] markdown [text][def_2] that [is][def_3] going [to][def_4] have [a][def_5] ton
+[of][def_6] definitions [in][def_7] it [to][def_8] test [my][def_9] definition [formatting][def_10].
 
+[def_1]: file1.md
+[def_2]: ../file2.md
+[def_3]: ../other/file3.md "This is the title for def 3"
+[def_4]: doc/file4.markdown
+[def_5]: ../../file5.md "This is the title for def 5"
+[def_6]: ../../../file6.md "This is the title for def 6"
+[def_7]: https://example.com/file7.md "This is the title for def 7"
+[def_8]: images/image.png
+[def_9]: ../images/image.png "This is the title for def 9"
+[def_10]: ../../images/image.png "This is the title for def 10"`;
+			it("without prefixing", () => {
+				expect(formatLinksInFile(text, repo, branch, currentDir, extensions, false)).to.equal(`# Links
+
+This is [some][def_1] markdown [text][def_2] that [is][def_3] going [to][def_4] have [a][def_5] ton
+[of][def_6] definitions [in][def_7] it [to][def_8] test [my][def_9] definition [formatting][def_10].
+
+[def_1]: /owner/repo/wiki/file1\n
+[def_2]: /owner/repo/wiki/file2\n
+[def_3]: /owner/repo/wiki/file3 "This is the title for def 3"\n
+[def_4]: /owner/repo/wiki/file4\n
+[def_5]: /owner/repo/blob/dev/file5.md "This is the title for def 5"\n
+[def_6]: ../../../file6.md "This is the title for def 6"\n
+[def_7]: https://example.com/file7.md "This is the title for def 7"\n
+[def_8]: /owner/repo/blob/dev/path/to/images/image.png\n
+[def_9]: /owner/repo/blob/dev/path/images/image.png "This is the title for def 9"\n
+[def_10]: /owner/repo/blob/dev/images/image.png "This is the title for def 10"\n`);
+			});
+			it("with prefixing", () => {
+				expect(formatLinksInFile(text, repo, branch, currentDir, extensions, true)).to.equal(`# Links
+
+This is [some][def_1] markdown [text][def_2] that [is][def_3] going [to][def_4] have [a][def_5] ton
+[of][def_6] definitions [in][def_7] it [to][def_8] test [my][def_9] definition [formatting][def_10].
+
+[def_1]: /owner/repo/wiki/path|to|file1\n
+[def_2]: /owner/repo/wiki/path|file2\n
+[def_3]: /owner/repo/wiki/path|other|file3 "This is the title for def 3"\n
+[def_4]: /owner/repo/wiki/path|to|doc|file4\n
+[def_5]: /owner/repo/blob/dev/file5.md "This is the title for def 5"\n
+[def_6]: ../../../file6.md "This is the title for def 6"\n
+[def_7]: https://example.com/file7.md "This is the title for def 7"\n
+[def_8]: /owner/repo/blob/dev/path/to/images/image.png\n
+[def_9]: /owner/repo/blob/dev/path/images/image.png "This is the title for def 9"\n
+[def_10]: /owner/repo/blob/dev/images/image.png "This is the title for def 10"\n`);
+			});
 		});
 	});
 

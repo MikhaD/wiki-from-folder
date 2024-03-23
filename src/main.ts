@@ -76,6 +76,7 @@ type Data = {
 	sidebar: boolean;
 	sidebarFileTypes: string[];
 	prefixFilesWithDir: boolean;
+	branchToLinkTo: string;
 };
 
 export function onEachDir(dir: DirectoryContents, data: Data) {
@@ -93,7 +94,7 @@ export function onEachDir(dir: DirectoryContents, data: Data) {
 		}
 		if (data.sidebarFileTypes.includes(path.extname(file.name).toLowerCase())) {
 			const text = fs.readFileSync(path.join(dir.path, file.name), "utf8");
-			const fileContents = formatLinksInFile(text, repoName, dir.path, data.sidebarFileTypes, data.prefixFilesWithDir);
+			const fileContents = formatLinksInFile(text, repoName, data.branchToLinkTo, dir.path, data.sidebarFileTypes, data.prefixFilesWithDir);
 			fs.writeFileSync(path.join(data.tempDir, formattedFileName), fileContents);
 			if (data.sidebar) {
 				data.sidebarBuilder.addLink(headerFromFileName(file.name), formattedFileName);

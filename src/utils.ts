@@ -143,37 +143,37 @@ export function highestLevelDir(file: string): string {
  * wiki pages, or is in the repo but not in one of the folders the wiki is being generated from, the
  * link will be formatted as a link to the file in the repo. If the file is not in the repo, the
  * link will be left as is.
- * @param url - The link to format.
+ * @param link - The link to format.
  * @param repo - The name of the repo the action is running in in the form `owner/repo`.
  * @param currentDir - The current directory of the file being formatted.
  * @param extensions - A list of file extensions to be be considered wiki files (linked to the wiki instead of the repo).
  * @param prefixWithDir - Whether to prefix the file name being linked to with the directory it is in.
  */
-export function formatLocalLink(url: string, repo: string, currentDir: string, extensions: string[], prefixWithDir: boolean): string {
-	if (isLocalUrl(url)) {
-		const newPath = path.join(currentDir, url);
+export function formatLocalLink(link: string, repo: string, branchToLinkTo: string, currentDir: string, extensions: string[], prefixWithDir: boolean): string {
+	if (isLocalUrl(link)) {
+		const newPath = path.join(currentDir, link);
 		if (highestLevelDir(newPath) === highestLevelDir(currentDir)) {
 			// let fileName = path.basename(url);
 			// This is a link to another wiki page
-			if (extensions.includes(path.extname(url))) {
-				currentDir = path.join(currentDir, path.dirname(url));
-				let file = path.basename(url);
+			if (extensions.includes(path.extname(link))) {
+				currentDir = path.join(currentDir, path.dirname(link));
+				let file = path.basename(link);
 				file = standardizeFileName(file, prefixWithDir ? currentDir : undefined);
 				return wikiURL(file, repo);
 			}
 			// This is in the dir the wiki is being generated from, but not a wiki page
-			return path.join("/", repo, "blob/main", newPath);
+			return path.join("/", repo, "blob", branchToLinkTo, newPath);
 		}
 		if (newPath.startsWith("../")) {
 			// this links to something outside the project directory
-			ac.warning(`[WARN] ${url} is not in the project directory, leaving as is.`);
+			ac.warning(`[WARN] ${link} is not in the project directory, leaving as is.`);
 		} else {
 			// This is in the repo itself
-			return path.join("/", repo, "blob/main", newPath);
+			return path.join("/", repo, "blob", branchToLinkTo, newPath);
 		}
 	}
 	// this is an external url to a web resource or something else
-	return url;
+	return link;
 }
 
 /**
@@ -186,11 +186,11 @@ export function formatLocalLink(url: string, repo: string, currentDir: string, e
  * @param extensions - A list of file extensions to be be considered wiki files (linked to the wiki instead of the repo).
  * @param prefixFileWithDir - Whether to prefix the file name with the directory it is in.
  */
-export function formatLinksInFile(text: string, repo: string, currentDir: string, extensions: string[], prefixFileWithDir: boolean) {
+export function formatLinksInFile(text: string, repo: string, branchToLinkTo: string, currentDir: string, extensions: string[], prefixFileWithDir: boolean) {
 	const tree = fromMarkdown(text);
 	visit(tree, ["image", "link", "definition"], function(node) {
 		node = node as Image | Link | Definition;
-		node.url = formatLocalLink(node.url, repo, currentDir, extensions, prefixFileWithDir);
+		node.url = formatLocalLink(node.url, repo, branchToLinkTo, currentDir, extensions, prefixFileWithDir);
 	});
 
 	return toMarkdown(tree);
