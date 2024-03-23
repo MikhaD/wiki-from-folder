@@ -62,8 +62,14 @@
 			"html",
 			"text"
 		],
+		"all": true,
+		"src": [
+			"src"
+		],
 		"exclude": [
-			"**/*.test.ts"
+			"**/*.test.ts",
+			"**/*.d.ts",
+			"index.ts"
 		]
 	},
 	"dependencies": {
