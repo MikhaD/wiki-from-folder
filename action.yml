@@ -4,12 +4,12 @@ description: Create a wiki from a folder of markdown files, with the option to i
 
 inputs:
   directories:
-    description: The directory or list of directories to generate the wiki from.
+    description: The directory or list of directories to generate the wiki from. Default is docs. If you wish to include multiple directories, separate them with a comma (docs, adr etc.).
     default: ./docs
   sidebar:
-    description: Whether or not you wish to generate a custom sidebar with categories based on the subdirectories of the input directory.
+    description: Whether or not you wish to generate a custom sidebar with categories based on the subdirectories of the input directory. Defaults to true.
     required: false
-    default: "false"
+    default: "true"
   prefix-files-with-directory:
     description: Whether or not to prefix file names with the directory they are in. This can be useful if you have multiple files with the same name in different directories, as github wikis completely ignore subdirectories and flatten everything out. Prefixed files will be named dir|filename.ext. Defaults to false.
     required: false

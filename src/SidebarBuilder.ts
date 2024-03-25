@@ -1,12 +1,11 @@
-import path from "path";
+import { wikiURL } from "./utils.js";
 
 export default class SidebarBuilder {
-	public static readonly INDENT = "\t";
+	public static readonly INDENT = "";
 
-	readonly #repo: string;
+	private repo: string;
 	private lines: string[];
 	private sectionsOpen: number;
-	private fileTypes: string[];
 
 	/**
 	 * A class to build a sidebar for a GitHub wiki.
@@ -14,19 +13,10 @@ export default class SidebarBuilder {
 	 * @param fileTypes - The list of file types to preprocess when linked to in the sidebar
 	 * (including the .).
 	 */
-	constructor(repo: string, fileTypes: string[]) {
-		if (repo.endsWith("wiki") || repo.endsWith("wiki/")) {
-			this.#repo = repo;
-		} else {
-			this.#repo = path.join(repo, "wiki");
-		}
-		this.fileTypes = fileTypes;
+	constructor(repo: string) {
+		this.repo = repo;
 		this.lines = [];
 		this.sectionsOpen = 0;
-	}
-
-	public get repo(): string {
-		return this.#repo;
 	}
 
 	private get indent() {
@@ -38,13 +28,22 @@ export default class SidebarBuilder {
 	}
 
 	private formatLink(title: string, fileToLinkTo: string): string {
-		const extension = path.extname(fileToLinkTo);
-		if (this.fileTypes.includes(extension)) {
-			fileToLinkTo = fileToLinkTo.slice(0, -extension.length);
-		}
-		return `<a href="${path.join(this.#repo, fileToLinkTo)}">${title}</a>`;
+		return `<a href="${wikiURL(fileToLinkTo, this.repo)}">${title}</a>`;
 	}
 
+	/**
+	 * Open a new section in the sidebar.
+	 * @param title The title of the section (details summary).
+	 * @param bold - Whether to make the title bold.
+	 */
+	public openSection(title: string, bold: boolean): void;
+	/**
+	 * Open a new section in the sidebar which can be expanded or clicked to go to a file.
+	 * @param title The title of the section (details summary).
+	 * @param bold - Whether to make the title bold.
+	 * @param fileToLinkTo - The file to link to when the section is clicked.
+	 */
+	public openSection(title: string, bold: boolean, fileToLinkTo: string): void
 	public openSection(title: string, bold: boolean, fileToLinkTo?: string) {
 		this.addLine("<details>");
 		this.sectionsOpen += 1;
@@ -59,6 +58,10 @@ export default class SidebarBuilder {
 		this.addLine("");
 	}
 
+	/**
+	 * Close the current section in the sidebar.
+	 * @returns Whether a section was closed. If there are no sections open, this will return false.
+	 */
 	public closeSection(): boolean {
 		if (this.sectionsOpen === 0) {
 			return false;
@@ -68,10 +71,19 @@ export default class SidebarBuilder {
 		return true;
 	}
 
+	/**
+	 * Add a link to the given file to the sidebar.
+	 * @param title - The title of the link (the thing that will be clicked on).
+	 * @param fileToLinkTo - The name of the file to link to. It is assumed to be in the wiki.
+	 */
 	public addLink(title: string, fileToLinkTo: string): void {
 		this.addLine(this.formatLink(title, fileToLinkTo) + "<br>");
 	}
 
+	/**
+	 * Dump the sidebar to a string.
+	 * @throws Error If there are still open sections when the sidebar is dumped.
+	 */
 	public dumps(): string {
 		if (this.sectionsOpen > 0) {
 			throw new Error("All sections must be closed before dumping the sidebar.");

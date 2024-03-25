@@ -1,10 +1,11 @@
 import { expect } from "chai";
-import { EMAIL_REGEX, formatAsList, formatLinksInFile, formatLocalLink, headerFromFileName, highestLevelDir, isLocalUrl, parseDirectoryContents, StripName, standardizeFileName, traverseDirs, wikiURL } from "../src/utils.js";
+import { EMAIL_REGEX, formatAsList, formatLinksInFile, formatLocalLink, headerFromFileName, highestLevelDir, isLocalUrl, parseDirectoryContents, StripName, standardizeFileName, wikiURL } from "../src/utils.js";
 import sinon from "sinon";
 import fs from "fs";
 import ac from "@actions/core";
 import { DirectoryContents } from "../src/types.js";
 import path from "path";
+import { files, Dir } from "./testing_utilities.js";
 
 describe("utils.ts", () => {
 	it("EMAIL_REGEX", () => {
@@ -120,6 +121,7 @@ describe("utils.ts", () => {
 		});
 		it("is local but not in the project directory", () => {
 			const warningStub = sinon.stub(ac, "warning");
+
 			expect(formatLocalLink("../../../file.md", repo, branch, "path/to", extensions, false))
 				.to.equal("../../../file.md");
 			expect(warningStub.calledOnce).to.be.true;
@@ -130,6 +132,10 @@ describe("utils.ts", () => {
 			expect(warningStub.calledTwice).to.be.true;
 			expect(warningStub.calledWith("[WARN] ../../../outside/file.ts is not in the project directory, leaving as is."))
 				.to.be.true;
+
+			after(() => {
+				warningStub.restore();
+			});
 		});
 		it("is an external url", () => {
 			expect(formatLocalLink("https://example.com/image.png", repo, branch, "path/to", extensions, false))
@@ -160,7 +166,7 @@ describe("utils.ts", () => {
 			const text = `# Links
 
 [Link to file 1](file1.md).
-[Link to file 2](../file2.md).
+[Link to file 2](../file2.md 'subtitle').
 [Link to file 3](../other/file3.md).
 - [Link to file 4](doc/file4.markdown).
 - [Link to file 5](../../file5.md).
@@ -173,7 +179,7 @@ describe("utils.ts", () => {
 				expect(formatLinksInFile(text, repo, branch, currentDir, extensions, false)).to.equal(`# Links
 
 [Link to file 1](/owner/repo/wiki/file1).
-[Link to file 2](/owner/repo/wiki/file2).
+[Link to file 2](/owner/repo/wiki/file2 "subtitle").
 [Link to file 3](/owner/repo/wiki/file3).
 
 * [Link to file 4](/owner/repo/wiki/file4).
@@ -189,7 +195,7 @@ describe("utils.ts", () => {
 				expect(formatLinksInFile(text, repo, branch, currentDir, extensions, true)).to.equal(`# Links
 
 [Link to file 1](/owner/repo/wiki/path|to|file1).
-[Link to file 2](/owner/repo/wiki/path|file2).
+[Link to file 2](/owner/repo/wiki/path|file2 "subtitle").
 [Link to file 3](/owner/repo/wiki/path|other|file3).
 
 * [Link to file 4](/owner/repo/wiki/path|to|doc|file4).
@@ -338,105 +344,48 @@ This is [some][def_1] markdown [text][def_2] that [is][def_3] going [to][def_4] 
 		expect(StripName("")).to.equal("");
 	});
 
-
-	describe("traverseDirs", function() {
-		it("run callback on each DirectoryContents", function() {
-			let count = 0;
-			const callback = () => count++;
-
-			const contents: DirectoryContents = {
-				path: "/",
-				dirs: [
-					{ path: "/subdir_1", dirs: [], files: [] },
-					{ path: "/subdir_2", dirs: [], files: [] }
-				],
-				files: []
-			};
-
-			traverseDirs(contents, null, callback);
-			expect(count).to.equal(3);
-		});
-
-		it("empty directory", function() {
-			let count = 0;
-			const callback = () => count++;
-
-			const contents: DirectoryContents = {
-				path: "/",
-				dirs: [],
-				files: []
-			};
-			traverseDirs(contents, null, callback);
-			expect(count).to.equal(1);
-		});
-
-		it("nested directories", function() {
-			let count = 0;
-			const callback = () => count++;
-
-			const contents: DirectoryContents = {
-				path: "/",
-				dirs: [
-					{
-						path: "/level_1",
-						dirs: [
-							{ path: "/level_1/level_2", dirs: [], files: [] }
-						],
-						files: []
-					}
-				],
-				files: []
-			};
-			traverseDirs(contents, null, callback);
-			expect(count).to.equal(3);
-		});
-	});
-
 	describe("parseDirectoryContents", function() {
 		let readdirSyncStub = sinon.stub(fs, "readdirSync");
+		const extensions = [".md"];
+
 		this.beforeEach(() => {
 			readdirSyncStub.resetBehavior();
 		});
 		it("should return the correct directory structure", function() {
 			const dir = "/test";
-			const file = new fs.Dirent();
-			file.name = "file1.md";
-			file.isFile = () => true;
 
-			readdirSyncStub.returns([file]);
-			const result = parseDirectoryContents(dir);
+			readdirSyncStub.returns([files.md[0], files.non_md_file]);
+			const result = parseDirectoryContents(dir, extensions);
 			expect(result).to.deep.equal({
 				path: dir,
+				totalFiles: 1,
 				dirs: [],
-				files: [file],
+				files: [files.md[0]],
 			});
 		});
 
 		it("should recurse into subdirectories", function() {
 			const dir = "/test";
-			const subDir = "/test/sub";
-			const file1 = new fs.Dirent();
-			file1.name = "file1.md";
-			file1.isFile = () => true;
-			const file2 = new fs.Dirent();
-			file2.name = "file2.md";
-			file2.isFile = () => true;
-			const dir1 = new fs.Dirent();
-			dir1.name = "sub";
-			dir1.isDirectory = () => true;
+			const dir1 = new Dir("sub");
 
-			readdirSyncStub.withArgs(dir, { withFileTypes: true }).returns([dir1, file1, file2]);
-			readdirSyncStub.withArgs(path.join(dir, dir1.name), { withFileTypes: true }).returns([file1, file2]);
-			const result = parseDirectoryContents(dir);
+			readdirSyncStub.withArgs(dir, { withFileTypes: true }).returns([dir1, ...files.md, files.non_md_file]);
+			readdirSyncStub.withArgs(path.join(dir, dir1.name), { withFileTypes: true }).returns([...files.md, ...files.markdown]);
+			const result = parseDirectoryContents(dir, extensions);
 			expect(result).to.deep.equal({
 				path: dir,
+				totalFiles: 8,
 				dirs: [{
-					path: subDir,
+					path: "/test/sub",
+					totalFiles: 4,
 					dirs: [],
-					files: [file1, file2],
+					files: [...files.md],
 				}],
-				files: [file1, file2],
+				files: [...files.md],
 			});
 		});
+
+		after(() => {
+			readdirSyncStub.restore();
+		})
 	});
 });

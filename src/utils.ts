@@ -26,43 +26,32 @@ export function formatAsList(str: string) {
 
 /**
  * Take a directory path and return a DirectoryContents object containing the path, a list of
- * subdirectories as DirectoryContents objects, and a list of files as Dirent objects.
+ * subdirectories as DirectoryContents objects, and a list of files that match the provided
+ * extensions as Dirent objects.
  * @param dir - The path to the directory to parse
+ * @param extensions - A list of file extensions to be considered files.
  */
-export function parseDirectoryContents(dir: string): DirectoryContents {
+export function parseDirectoryContents(dir: string, extensions: string[]): DirectoryContents {
 	const data = fs.readdirSync(dir, { withFileTypes: true });
 	const contents: DirectoryContents = {
 		path: dir,
+		totalFiles: 0,
 		dirs: [],
 		files: [],
 	};
 
 	for (const file of data) {
 		if (file.isDirectory()) {
-			contents.dirs.push(parseDirectoryContents(path.join(dir, file.name)));
-		} else if (file.isFile()) {
+			contents.dirs.push(parseDirectoryContents(path.join(dir, file.name), extensions));
+		} else if (file.isFile() && extensions.includes(path.extname(file.name))) {
 			contents.files.push(file);
 		}
 	}
-	return contents;
-}
-
-/**
- * Recursively traverse a DirectoryContents object, calling a callback on each DirectoryContents
- * object.
- * @param contents - The DirectoryContents object to traverse.
- * @param data - Any data you'd like accessible in the callback.
- * @param callback - The callback to call on each DirectoryContents object.
- */
-export function traverseDirs<T>(
-	contents: DirectoryContents,
-	data: T,
-	callback: (dir: DirectoryContents, data: T) => void
-): void {
-	callback(contents, data);
-	for (const dir of contents.dirs) {
-		traverseDirs(dir, data, callback);
+	for (const d of contents.dirs) {
+		contents.totalFiles += d.totalFiles;
 	}
+	contents.totalFiles += contents.files.length;
+	return contents;
 }
 
 /**

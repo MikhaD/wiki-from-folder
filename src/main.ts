@@ -1,113 +1,119 @@
-import { setFailed, info, getBooleanInput, getInput } from "@actions/core";
-import { parseDirectoryContents, formatAsList, headerFromFileName, standardizeFileName, formatLinksInFile, traverseDirs, wikiURL } from "./utils.js";
-import { commitAndPush, configureGit, cloneWiki } from "./git_helpers.js";
-import { DirectoryContents } from "./types";
+import ac from "@actions/core";
+import * as utils from "./utils.js";
+import * as gh from "./git_helpers.js";
+import { DirectoryContents, MainInputs } from "./types";
 import fs from "fs";
 
-import SidebarBuilder from "./SidebarBuilder";
+import SidebarBuilder from "./SidebarBuilder.js";
 import path from "path";
 
-/** The name of the repo the action is running in in the form `owner/repo` */
-const repoName = process.env.GITHUB_REPOSITORY!;
 
-/** The main function, executed in index.ts, exported to make it testable */
-export default async function main() {
+/**
+ * The main function, executed in index.ts, exported to make it testable.
+ * @param repo - The repo the action is running in in the format `owner/repo`.
+ */
+export default async function main(inputs: MainInputs) {
 	try {
-		const inputs = {
-			"directories": formatAsList(getInput("directories")),
-			"sidebar": getBooleanInput("sidebar"),
-			"prefixFilesWithDir": getBooleanInput("prefix-files-with-directory"),
-			"sidebarFileTypes": formatAsList(getInput("sidebar-file-types")).map((s) => {
-				if (!s.startsWith(".")) s = `.${s}`;
-				return s.toLowerCase();
-			}),
-			"branchToLinkTo": getInput("branch-to-link-to"),
-			"clearWiki": getBooleanInput("clear-wiki"),
-		};
-
 		const tempDir = `wiki-working-directory-${Date.now()}`;
-		const wiki = cloneWiki(repoName, tempDir, inputs.clearWiki);
+		const wiki = gh.cloneWiki(inputs.repo, tempDir, inputs.clearWiki);
 
 		let contents: DirectoryContents = {
-			path: inputs.directories[0],
+			path: "",
+			totalFiles: 0,
 			dirs: [],
 			files: [],
 		};
 
 		if (inputs.directories.length > 1) {
-			contents.path = "";
 			for (const dir of inputs.directories) {
-				contents.dirs.push(parseDirectoryContents(dir));
+				const dc = utils.parseDirectoryContents(dir, inputs.sidebarFileTypes);
+				contents.totalFiles += dc.totalFiles;
+				contents.dirs.push(dc);
 			}
 		} else {
-			contents = parseDirectoryContents(inputs.directories[0]);
+			contents = utils.parseDirectoryContents(inputs.directories[0], inputs.sidebarFileTypes);
 		}
-
-		const data: Data = {
-			sidebarBuilder: new SidebarBuilder(repoName, inputs.sidebarFileTypes),
-			tempDir: tempDir,
-			repo: repoName,
-			...inputs,
-		};
+		// Don't make the folder containing the docs a section in the sidebar
+		contents.path = ""
 
 		await wiki; // wait for the wiki to clone
 
-		traverseDirs(contents, data, onEachDir);
-		// must be data.sidebar not inputs.sidebar because if it was true but there was already a
-		// sidebar file it will be set to false
-		if (data.sidebar) {
-			fs.writeFileSync(path.join(tempDir, "_Sidebar.md"), data.sidebarBuilder.dumps());
+		if (inputs.sidebar) {
+			const sb = processFiles(contents, tempDir, inputs, true);
+			fs.writeFileSync(path.join(tempDir, "_Sidebar.md"), sb.dumps());
+		} else {
+			processFiles(contents, tempDir, inputs, false);
 		}
 
 		// clone the wiki repo
-		configureGit();
+		gh.configureGit();
 		process.chdir(tempDir);
-		commitAndPush(["."], ":memo: updated wiki");
+		gh.commitAndPush(["."], ":memo: updated wiki");
 	} catch (e) {
-		info(e as string);
-		setFailed("Action failed");
+		ac.info(e as string);
+		ac.setFailed("Action failed");
 	}
 }
 
-type Data = {
-	sidebarBuilder: SidebarBuilder;
-	tempDir: string;
-	repo: string;
-	sidebar: boolean;
-	sidebarFileTypes: string[];
-	prefixFilesWithDir: boolean;
-	branchToLinkTo: string;
-};
+/**
+ * Recurse through the directory structure, processing the links in each file and copying them to
+ * the temp directory if they are specified as wiki files.
+ * @param dir - The DirectoryContents object to recursively process.
+ * @param tempDir - The temporary directory to copy the files to.
+ * @param inputs - The inputs to the action.
+ * @param sb - Whether to build and return a sidebar.
+ */
+export function processFiles(dir: DirectoryContents, tempDir: string, inputs: MainInputs, sidebar: false): undefined;
+/**
+ * Recurse through the directory structure, processing the links in each file and copying them to
+ * the temp directory if they are specified as wiki files. Each wiki file will be added to the
+ * sidebar.
+ * @param dir - The DirectoryContents object to recursively process.
+ * @param tempDir - The temporary directory to copy the files to.
+ * @param inputs - The inputs to the action.
+ * @param sb - Whether to build and return a sidebar.
+ *
+ * @returns A SidebarBuilder object containing the sidebar links.
+ */
+export function processFiles(dir: DirectoryContents, tempDir: string, inputs: MainInputs, sidebar: true): SidebarBuilder;
+export function processFiles(dir: DirectoryContents, tempDir: string, inputs: MainInputs, sidebar: boolean): SidebarBuilder | undefined {
+	if (sidebar) {
+		return __processFiles(dir, tempDir, inputs, new SidebarBuilder(inputs.repo));
+	}
+	return __processFiles(dir, tempDir, inputs);
+}
 
-export function onEachDir(dir: DirectoryContents, data: Data) {
-	const numWikiFiles = dir.files.reduce((count, file) => count + +data.sidebarFileTypes.includes(path.extname(file.name)), 0);
-	if (data.sidebar && dir.path && numWikiFiles > 0) {
-		data.sidebarBuilder.openSection(path.basename(dir.path), true);
+function __processFiles(dir: DirectoryContents, tempDir: string, inputs: MainInputs, sb?: SidebarBuilder) {
+	if (sb && dir.path && dir.totalFiles > 0) {
+		sb.openSection(path.basename(dir.path), true);
 	}
 	for (const file of dir.files) {
-		const formattedFileName = standardizeFileName(file.name, data.prefixFilesWithDir ? dir.path : undefined);
-		if (dir.path.length > 0 && (file.name === "_Sidebar.md" || file.name === "_Footer.md")) {
-			if (file.name === "_Sidebar.md") data.sidebar = false;
-			info(`Found existing ${file.name}`);
-			fs.copyFileSync(path.join(dir.path, file.name), path.join(data.tempDir, file.name));
-			continue;
-		}
-		if (data.sidebarFileTypes.includes(path.extname(file.name).toLowerCase())) {
-			const text = fs.readFileSync(path.join(dir.path, file.name), "utf8");
-			const fileContents = formatLinksInFile(text, repoName, data.branchToLinkTo, dir.path, data.sidebarFileTypes, data.prefixFilesWithDir);
-			fs.writeFileSync(path.join(data.tempDir, formattedFileName), fileContents);
-			if (data.sidebar) {
-				data.sidebarBuilder.addLink(headerFromFileName(file.name), formattedFileName);
+		const formattedFileName = utils.standardizeFileName(file.name, inputs.prefixFilesWithDir ? dir.path : undefined);
+		if (["_Sidebar.md", "_Footer.md"].includes(file.name)) {
+			if (file.name === "_Sidebar.md" && sb) {
+				ac.warning("Found existing _Sidebar.md, overwriting. Set `sidebar` to false to prevent this.");
+			} else {
+				ac.info(`Found existing ${file.name}`);
 			}
+			fs.copyFileSync(path.join(dir.path, file.name), path.join(tempDir, file.name));
 		} else {
-			fs.copyFileSync(path.join(dir.path, file.name), path.join(data.tempDir, formattedFileName));
-		}
-
-		if (data.sidebar && numWikiFiles > 0) {
-			data.sidebarBuilder.addLink(headerFromFileName(file.name), wikiURL(formattedFileName, data.repo));
+			const text = fs.readFileSync(path.join(dir.path, file.name), "utf8");
+			const fileContents = utils.formatLinksInFile(text, inputs.repo, inputs.branchToLinkTo, dir.path, inputs.sidebarFileTypes, inputs.prefixFilesWithDir);
+			fs.writeFileSync(path.join(tempDir, "generated", formattedFileName), fileContents);
+			if (sb) {
+				sb.addLink(utils.headerFromFileName(file.name), formattedFileName);
+			}
 		}
 	}
-	if (data.sidebar && dir.path) {
-		data.sidebarBuilder.closeSection();
+	for (const sub_dir of dir.dirs) {
+		if (sb) {
+			sb = __processFiles(sub_dir, tempDir, inputs, sb);
+		} else {
+			sb = __processFiles(sub_dir, tempDir, inputs);
+		}
 	}
+	if (sb && dir.path && dir.totalFiles > 0) {
+		sb.closeSection();
+	}
+	return sb;
 }
