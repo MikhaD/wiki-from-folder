@@ -15,6 +15,6 @@ jobs:
       - name: This action
         uses: ./
         with:
-            directories: "docs"
+            folders: "docs"
             prefix-files-with-directory: false
             clear-wiki: true
