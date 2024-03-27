@@ -1,4 +1,4 @@
-import { wikiURL } from "./utils.js";
+import { wikiURL, createEditWarning } from "./utils.js";
 
 export default class SidebarBuilder {
 	public static readonly INDENT = "";
@@ -10,13 +10,16 @@ export default class SidebarBuilder {
 	/**
 	 * A class to build a sidebar for a GitHub wiki.
 	 * @param repo - The name of the repo the action is running in in the form `owner/repo`
-	 * @param fileTypes - The list of file types to preprocess when linked to in the sidebar
-	 * (including the .).
+	 * @param editWarning - Whether to add a warning to the sidebar telling users not to edit
+	 * it.
 	 */
-	constructor(repo: string) {
+	constructor(repo: string, editWarning: boolean) {
 		this.repo = repo;
 		this.lines = [];
 		this.sectionsOpen = 0;
+		if (editWarning) {
+			this.addLine(createEditWarning());
+		}
 	}
 
 	private get indent() {

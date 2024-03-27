@@ -1,4 +1,4 @@
-name: Testing
+name: Tests
 
 on:
   push:
@@ -18,8 +18,5 @@ jobs:
           node-version: "21"
       - name: Install
         run: npm install
-      - name: Test and Coverage
-        run: npm run coverage
-
-      - name: Update Coverage Badge
-        uses: we-cli/coverage-badge-action@main
+      - name: Test
+        run: npm run test

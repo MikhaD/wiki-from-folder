@@ -1,23 +1,24 @@
 name: Generate Wiki
 author: MikhaD
-description: Create a wiki from a folder of markdown files, with the option to include a custom sidebar.
+description: Create a wiki from one or more folders of markdown files, with the option to generate a custom sidebar from th =e directory structure of the source files.
 
 inputs:
-  directories:
-    description: The directory or list of directories to generate the wiki from. Default is docs. If you wish to include multiple directories, separate them with a comma (docs, adr etc.).
-    default: ./docs
+  folders:
+    description: The directory or list of folders to generate the wiki from. Default is docs. If you wish to include multiple directories, separate them with a comma (docs, adr etc.).
+    default: 'docs'
+    required: false
   sidebar:
     description: Whether or not you wish to generate a custom sidebar with categories based on the subdirectories of the input directory. Defaults to true.
     required: false
-    default: "true"
+    default: 'true'
   prefix-files-with-directory:
     description: Whether or not to prefix file names with the directory they are in. This can be useful if you have multiple files with the same name in different directories, as github wikis completely ignore subdirectories and flatten everything out. Prefixed files will be named dir|filename.ext. Defaults to false.
     required: false
-    default: "false"
-  sidebar-file-types:
-    description: A comma separated list of the types of file to include in the sidebar. Defaults to markdown files. List should be in the format .ext0, .ext1, .ext2
-    required: false
-    default: .md, .markdown
+    default: 'false'
+  # sidebar-file-types:
+  #   description: A comma separated list of the types of file to include in the sidebar. Defaults to markdown files. List should be in the format .ext0, .ext1, .ext2
+  #   required: false
+  #   default: .md, .markdown
   branch-to-link-to:
     description: The branch to link to when wiki files link to code, images etc. Defaults to the default branch of the repository.
     required: false
@@ -25,8 +26,12 @@ inputs:
   clear-wiki:
     description: Whether or not to clear the wiki before generating the new files. Defaults to false. This is useful if you do not want wiki pages from anywhere other than this action.
     required: false
-    default: "false"
+    default: 'false'
+  edit-warning:
+    description: Whether or not to include a warning comment at the top of each generated file telling the viewer not to edit it and pointing them to the source file to edit instead. Defaults to true.
+    required: false
+    default: 'true'
 
 runs:
-  using: node16
+  using: node20
   main: dist/index.js

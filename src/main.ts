@@ -24,14 +24,14 @@ export default async function main(inputs: MainInputs) {
 			files: [],
 		};
 
-		if (inputs.directories.length > 1) {
-			for (const dir of inputs.directories) {
+		if (inputs.folders.length > 1) {
+			for (const dir of inputs.folders) {
 				const dc = utils.parseDirectoryContents(dir, inputs.sidebarFileTypes);
 				contents.totalFiles += dc.totalFiles;
 				contents.dirs.push(dc);
 			}
 		} else {
-			contents = utils.parseDirectoryContents(inputs.directories[0], inputs.sidebarFileTypes);
+			contents = utils.parseDirectoryContents(inputs.folders[0], inputs.sidebarFileTypes);
 		}
 		// Don't make the folder containing the docs a section in the sidebar
 		contents.path = ""
@@ -78,7 +78,7 @@ export function processFiles(dir: DirectoryContents, tempDir: string, inputs: Ma
 export function processFiles(dir: DirectoryContents, tempDir: string, inputs: MainInputs, sidebar: true): SidebarBuilder;
 export function processFiles(dir: DirectoryContents, tempDir: string, inputs: MainInputs, sidebar: boolean): SidebarBuilder | undefined {
 	if (sidebar) {
-		return __processFiles(dir, tempDir, inputs, new SidebarBuilder(inputs.repo));
+		return __processFiles(dir, tempDir, inputs, new SidebarBuilder(inputs.repo, inputs.editWarning));
 	}
 	return __processFiles(dir, tempDir, inputs);
 }
@@ -89,16 +89,20 @@ function __processFiles(dir: DirectoryContents, tempDir: string, inputs: MainInp
 	}
 	for (const file of dir.files) {
 		const formattedFileName = utils.standardizeFileName(file.name, inputs.prefixFilesWithDir ? dir.path : undefined);
+		const fullPath = path.join(dir.path, file.name);
 		if (["_Sidebar.md", "_Footer.md"].includes(file.name)) {
 			if (file.name === "_Sidebar.md" && sb) {
 				ac.warning("Found existing _Sidebar.md, overwriting. Set `sidebar` to false to prevent this.");
 			} else {
 				ac.info(`Found existing ${file.name}`);
 			}
-			fs.copyFileSync(path.join(dir.path, file.name), path.join(tempDir, file.name));
+			fs.copyFileSync(fullPath, path.join(tempDir, file.name));
 		} else {
-			const text = fs.readFileSync(path.join(dir.path, file.name), "utf8");
-			const fileContents = utils.formatLinksInFile(text, inputs.repo, inputs.branchToLinkTo, dir.path, inputs.sidebarFileTypes, inputs.prefixFilesWithDir);
+			const text = fs.readFileSync(fullPath, "utf8");
+			let fileContents = utils.formatLinksInFile(text, inputs.repo, inputs.branchToLinkTo, dir.path, inputs.sidebarFileTypes, inputs.prefixFilesWithDir);
+			if (inputs.editWarning) {
+				fileContents = utils.createEditWarning(fullPath) + "\n" + fileContents;
+			}
 			fs.writeFileSync(path.join(tempDir, "generated", formattedFileName), fileContents);
 			if (sb) {
 				sb.addLink(utils.headerFromFileName(file.name), formattedFileName);

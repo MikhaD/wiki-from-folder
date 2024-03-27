@@ -3,15 +3,17 @@ import ac from "@actions/core";
 import * as utils from "./utils.js";
 
 const inputs = {
-	directories:		utils.formatAsList(ac.getInput("directories")),
+	folders:			utils.formatAsList(ac.getInput("folders")),
 	sidebar:			ac.getBooleanInput("sidebar"),
 	prefixFilesWithDir:	ac.getBooleanInput("prefix-files-with-directory"),
-	sidebarFileTypes:	utils.formatAsList(ac.getInput("sidebar-file-types")).map((s) => {
-							if (!s.startsWith(".")) s = `.${s}`;
-							return s.toLowerCase();
-						}),
+	sidebarFileTypes:	[".md", ".markdown"],
+	// sidebarFileTypes:	utils.formatAsList(ac.getInput("sidebar-file-types")).map((s) => {
+	// 						if (!s.startsWith(".")) s = `.${s}`;
+	// 						return s.toLowerCase();
+	// 					}),
 	branchToLinkTo:		ac.getInput("branch-to-link-to"),
 	clearWiki:			ac.getBooleanInput("clear-wiki"),
+	editWarning:		ac.getBooleanInput("edit-warning"),
 	repo: 				process.env.GITHUB_REPOSITORY!,
 };
 
