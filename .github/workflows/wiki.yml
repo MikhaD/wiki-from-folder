@@ -12,13 +12,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: install dependencies
-        run: npm ci
-
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
+
+      - name: install dependencies
+        run: npm ci
+
+      - name: Set up git
+        run: |
+          git config --global credential.helper store
+          echo "https://$GH_TOKEN@github.com" > ~/.git-credentials
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: This action
         uses: ./
