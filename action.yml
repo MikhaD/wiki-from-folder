@@ -34,4 +34,4 @@ inputs:
 
 runs:
   using: node20
-  main: src/index.ts
+  main: dist/index.js
