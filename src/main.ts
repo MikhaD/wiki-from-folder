@@ -12,10 +12,10 @@ import path from "path";
  * The main function, executed in index.ts, exported to make it testable.
  * @param repo - The repo the action is running in in the format `owner/repo`.
  */
-export default async function main(inputs: MainInputs) {
+export default async function main(inputs: MainInputs, token: string) {
 	try {
 		const tempDir = `../wiki-working-directory-${Date.now()}`;
-		const wiki = gh.cloneWiki(inputs.repo, tempDir, inputs.clearWiki);
+		const wiki = gh.cloneWiki(inputs.repo, tempDir, inputs.clearWiki, token);
 
 		let contents: DirectoryContents = {
 			path: "",

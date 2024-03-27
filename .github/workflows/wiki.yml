@@ -20,13 +20,6 @@ jobs:
       - name: install dependencies
         run: npm ci
 
-      - name: Set up git
-        run: |
-          git config --global credential.helper store
-          echo "https://$GH_TOKEN@github.com" > ~/.git-credentials
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: This action
         uses: ./
         with:
