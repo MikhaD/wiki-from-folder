@@ -21,6 +21,7 @@ class ExecError extends Error {
 export async function configureGit(email = "action@github.com", name = "actions-user") {
 	if (!EMAIL_REGEX.test(email)) throw new SyntaxError("Invalid email syntax");
 	let errorAccumulator = 0;
+	errorAccumulator += await exec.exec(`git config --global --add safe.directory ${process.cwd()}`);
 	errorAccumulator += await exec.exec(`git config --global user.email ${email}`);
 	errorAccumulator += await exec.exec(`git config --global user.name ${name}`);
 	if (errorAccumulator > 0) {

@@ -14,7 +14,7 @@ import path from "path";
  */
 export default async function main(inputs: MainInputs) {
 	try {
-		const tempDir = `wiki-working-directory-${Date.now()}`;
+		const tempDir = `../wiki-working-directory-${Date.now()}`;
 		const wiki = gh.cloneWiki(inputs.repo, tempDir, inputs.clearWiki);
 
 		let contents: DirectoryContents = {
@@ -46,11 +46,11 @@ export default async function main(inputs: MainInputs) {
 		}
 
 		// clone the wiki repo
-		gh.configureGit();
 		process.chdir(tempDir);
+		gh.configureGit();
 		gh.commitAndPush(["."], ":memo: updated wiki");
 	} catch (e) {
-		ac.info(e as string);
+		ac.error(e as string);
 		ac.setFailed("Action failed");
 	}
 }

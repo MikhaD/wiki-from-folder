@@ -16,13 +16,13 @@ describe("Git Helper Functions", () => {
 	describe("configureGit", () => {
 		it("No parameters", async () => {
 			expect(await configureGit()).to.be.undefined;
-			expect(execStub.callCount).to.equal(2);
+			expect(execStub.callCount).to.equal(3);
 			expect(execStub.calledWith("git config --global user.email action@github.com")).to.be.true;
 			expect(execStub.calledWith("git config --global user.name actions-user")).to.be.true;
 		});
 		it("Valid parameters", async () => {
 			expect(await configureGit("bob@bob.bob", "bob")).to.be.undefined;
-			expect(execStub.callCount).to.equal(2);
+			expect(execStub.callCount).to.equal(3);
 			expect(execStub.calledWith("git config --global user.email bob@bob.bob")).to.be.true;
 			expect(execStub.calledWith("git config --global user.name bob")).to.be.true;
 		});
@@ -91,8 +91,8 @@ describe("Git Helper Functions", () => {
 			} catch (error) {
 				message = (error as Error).message;
 			}
-			expect(message).to.equal("Failed to initialize git [4]");
-			expect(execStub.callCount).to.equal(2);
+			expect(message).to.equal("Failed to initialize git [6]");
+			expect(execStub.callCount).to.equal(3);
 		});
 		it("cloneWiki clear", async () => {
 			let message = "didn't throw error";

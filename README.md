@@ -17,13 +17,16 @@ If there is a file named `_sidebar.md` in the root of the folder, it will be use
 If you wish to have a custom footer, you can include a file named `_footer.md` in the root of the folder.
 
 ## Usage
-Add a .yml file to your .github/workflows folder containing the following:
+Add a wiki.yml file to your .github/workflows folder containing the following:
 ```yaml
 name: Generate Wiki
 
 on:
   push:
 	branches: [ main ]
+	paths:
+	  - docs/**
+	  - .github/workflows/wiki.yml
 
 jobs:
   generate-wiki:

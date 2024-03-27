@@ -10,7 +10,7 @@
 	"scripts": {
 		"test": "NODE_OPTIONS='--no-warnings --loader ts-node/esm' c8 mocha",
 		"build": "tsc -p tsconfig.json",
-		"package": "npx ncc build src/index.ts --minify",
+		"package": "npx ncc build src/index.ts --minify --license licenses.txt",
 		"coverage": "NODE_OPTIONS='--no-warnings --loader ts-node/esm' c8 -r json-summary mocha"
 	},
 	"repository": {
