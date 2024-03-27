@@ -1,0 +1,3 @@
+If `sidebar` is set to `true`, the action will generate a sidebar for the wiki based on the directory structure of the source files. Each folder will be a section in the sidebar, and each markdown file will be a link in the sidebar. This is done by creating a custom _Sidebar.md file in the root of the wiki folder, which github uses to display the sidebar.
+
+This is useful because by default github ignores directory structure when generating the sidebar, leading to a flat list of pages that can get quite cluttered.

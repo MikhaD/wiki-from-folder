@@ -1,0 +1,20 @@
+name: Generate Wiki
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  update:
+    name: Generate wiki from docs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: This action
+        uses: ./
+        with:
+            directories: "docs"
+            prefix-files-with-directory: false
+            clear-wiki: true
