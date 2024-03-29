@@ -15,10 +15,9 @@ jobs:
       - name: Try cloning wiki
         run: |
           gh auth setup-git
-          git clone ${{github.server_url}}/${{github.repository}}.wiki.git
+          git clone --depth=1 ${{github.server_url}}/${{github.repository}}.wiki.git
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GH_HOST: ${{ github.server_url }}
 
       - name: Setup Node
         uses: actions/setup-node@v4
