@@ -53,6 +53,7 @@ export async function commitAndPush(files: string[], message: string) {
  */
 export async function cloneWiki(repo: string, cloneTo: string, clear: boolean = false) {
 	let errorAccumulator = 0;
+	errorAccumulator += await exec.exec("gh", ["auth", "setup-git"])
 	errorAccumulator += await exec.exec("git", ["clone", "--depth=1", `https://github.com/${repo}.wiki.git`, cloneTo]);
 	if (clear) {
 		errorAccumulator += await exec.exec("rm", ["-r", `${cloneTo}/*`]);
