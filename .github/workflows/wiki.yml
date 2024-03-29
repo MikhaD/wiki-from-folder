@@ -13,7 +13,13 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Try cloning wiki
-        run: git clone https://${{github.token}}@github.com/${{github.repository}}.wiki.git wiki
+        run: |
+          gh auth setup-git
+          git clone ${{github.server_url}}/${{github.repository}}.wiki.git
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_HOST: ${{ github.server_url }}
 
       - name: Setup Node
         uses: actions/setup-node@v4
