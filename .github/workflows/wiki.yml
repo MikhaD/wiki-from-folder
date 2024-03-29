@@ -20,6 +20,9 @@ jobs:
       - name: install dependencies
         run: npm ci
 
+      - name: Try cloning wiki
+        run: git clone https://${{secrets.GITHUB_TOKEN}}@github.com/${{github.repository}}.wiki.git wiki
+
       - name: This action
         uses: ./
         with:
