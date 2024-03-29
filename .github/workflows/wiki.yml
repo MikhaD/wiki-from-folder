@@ -20,6 +20,7 @@ jobs:
           ls
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_HOST: ${{ github.server_url }}
 
       - name: Setup Node
         uses: actions/setup-node@v4
