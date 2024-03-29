@@ -19,5 +19,5 @@ const inputs = {
 
 process.env.GH_TOKEN = ac.getInput("token");
 process.env.GITHUB_TOKEN = ac.getInput("token");
-process.env.GH_HOST = "github.com";
+process.env.GH_HOST = "https://github.com";
 await main(inputs);
