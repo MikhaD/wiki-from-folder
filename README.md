@@ -47,6 +47,7 @@ jobs:
 You can read more about the available options [here](/quicklysign/wiki-from-folder/wiki).
 
 ## Required features before 1.0
+- Figure out if links to folders are treated correctly
 - Make sure the directory path being turned into part of the title is processed properly (spaces, underscores, etc.)
 - Option to include the folders containing the documents to generate the wiki from as sections in the sidebar
 - Need an ignore list: There is a possibility that a folder will contain a file named _sidebar.md, which should not be included in the sidebar, but will cause the empty folder to be included in the sidebar
