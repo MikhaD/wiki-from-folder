@@ -12,6 +12,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Try cloning wiki
+        run: git clone https://${{github.token}}@github.com/${{github.repository}}.wiki.git wiki
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -19,9 +22,6 @@ jobs:
 
       - name: install dependencies
         run: npm ci
-
-      - name: Try cloning wiki
-        run: git clone https://${{secrets.GITHUB_TOKEN}}@github.com/${{github.repository}}.wiki.git wiki
 
       - name: This action
         uses: ./
