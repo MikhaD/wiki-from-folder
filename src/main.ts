@@ -14,8 +14,9 @@ import path from "path";
  */
 export default async function main(inputs: MainInputs) {
 	try {
-		const tempDir = `../wiki-working-directory-${Date.now()}`;
-		const wiki = gh.cloneWiki(inputs.repo, inputs.host, tempDir, inputs.clearWiki);
+		// const tempDir = `../wiki-working-directory-${Date.now()}`;
+		const tempDir = `./wiki`;
+		// const wiki = gh.cloneWiki(inputs.repo, inputs.host, tempDir, inputs.clearWiki);
 
 		let contents: DirectoryContents = {
 			path: "",
@@ -36,7 +37,7 @@ export default async function main(inputs: MainInputs) {
 		// Don't make the folder containing the docs a section in the sidebar
 		contents.path = ""
 
-		await wiki; // wait for the wiki to clone
+		// await wiki; // wait for the wiki to clone
 
 		if (inputs.sidebar) {
 			const sb = processFiles(contents, tempDir, inputs, true);

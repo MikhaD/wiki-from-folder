@@ -12,12 +12,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Try cloning wiki
-        run: |
-          gh auth setup-git
-          git clone --depth=1 ${{github.server_url}}/${{github.repository}}.wiki.git wiki
-          cd wiki
-          ls
+      # - name: Try cloning wiki
+      #   run: |
+      #     gh auth setup-git
+      #     git clone --depth=1 ${{github.server_url}}/${{github.repository}}.wiki.git wiki
+      #     cd wiki
+      #     ls
         env:
           GH_TOKEN: ${{ github.token }}
 

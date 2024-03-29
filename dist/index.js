@@ -13,8 +13,8 @@ const inputs = {
     branchToLinkTo: ac.getInput("branch-to-link-to"),
     clearWiki: ac.getBooleanInput("clear-wiki"),
     editWarning: ac.getBooleanInput("edit-warning"),
+    host: ac.getInput("host"),
     repo: process.env.GITHUB_REPOSITORY,
 };
-// process.env.GH_TOKEN = ac.getInput("token");
-const token = ac.getInput("token");
-await main(inputs, token);
+process.env.GH_TOKEN = ac.getInput("token");
+await main(inputs);

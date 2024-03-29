@@ -9,5 +9,6 @@
 		"noImplicitAny": true,
 		"esModuleInterop": true,
 		"noUnusedLocals": false
-	}
+	},
+	"exclude": ["tests", "node_modules"]
 }

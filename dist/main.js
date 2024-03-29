@@ -8,10 +8,11 @@ import path from "path";
  * The main function, executed in index.ts, exported to make it testable.
  * @param repo - The repo the action is running in in the format `owner/repo`.
  */
-export default async function main(inputs, token) {
+export default async function main(inputs) {
     try {
-        const tempDir = `../wiki-working-directory-${Date.now()}`;
-        const wiki = gh.cloneWiki(inputs.repo, tempDir, inputs.clearWiki, token);
+        // const tempDir = `../wiki-working-directory-${Date.now()}`;
+        const tempDir = `./wiki`;
+        // const wiki = gh.cloneWiki(inputs.repo, inputs.host, tempDir, inputs.clearWiki);
         let contents = {
             path: "",
             totalFiles: 0,
@@ -30,7 +31,7 @@ export default async function main(inputs, token) {
         }
         // Don't make the folder containing the docs a section in the sidebar
         contents.path = "";
-        await wiki; // wait for the wiki to clone
+        // await wiki; // wait for the wiki to clone
         if (inputs.sidebar) {
             const sb = processFiles(contents, tempDir, inputs, true);
             fs.writeFileSync(path.join(tempDir, "_Sidebar.md"), sb.dumps());
