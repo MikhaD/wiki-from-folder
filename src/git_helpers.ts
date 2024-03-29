@@ -51,11 +51,10 @@ export async function commitAndPush(files: string[], message: string) {
  * @param clear - Whether to clear the files downloaded from the wiki
  * @throws ExecError
  */
-export async function cloneWiki(repo: string, cloneTo: string, clear: boolean = false) {
+export async function cloneWiki(repo: string, host: string, cloneTo: string, clear: boolean = false) {
 	let errorAccumulator = 0;
 	errorAccumulator += await exec.exec("gh", ["auth", "setup-git"])
-	errorAccumulator += await exec.exec(`git config --global --add safe.directory ${process.cwd()}`);
-	errorAccumulator += await exec.exec("git", ["clone", "--depth=1", `github.com/${repo}.wiki.git`]);
+	errorAccumulator += await exec.exec("git", ["clone", "--depth=1", `${host}/${repo}.wiki.git`, cloneTo]);
 	if (clear) {
 		errorAccumulator += await exec.exec("rm", ["-r", `${cloneTo}/*`]);
 	}

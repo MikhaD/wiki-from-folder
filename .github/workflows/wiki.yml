@@ -19,7 +19,7 @@ jobs:
           cd wiki
           ls
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
 
       - name: Setup Node
         uses: actions/setup-node@v4

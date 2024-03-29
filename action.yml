@@ -49,6 +49,10 @@ inputs:
       changes to the wiki.
     required: true
     default: ${{ github.token }}
+  host:
+    description: Could this be the issue?
+    required: true
+    default: ${{ github.server_url }}
 
 runs:
   using: node20

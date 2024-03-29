@@ -15,7 +15,7 @@ import path from "path";
 export default async function main(inputs: MainInputs) {
 	try {
 		const tempDir = `../wiki-working-directory-${Date.now()}`;
-		const wiki = gh.cloneWiki(inputs.repo, tempDir, inputs.clearWiki);
+		const wiki = gh.cloneWiki(inputs.repo, inputs.host, tempDir, inputs.clearWiki);
 
 		let contents: DirectoryContents = {
 			path: "",

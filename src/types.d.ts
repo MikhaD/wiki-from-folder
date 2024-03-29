@@ -17,4 +17,5 @@ type MainInputs = {
 	clearWiki:			boolean,
 	editWarning:		boolean,
 	repo: 				string,
+	host: 				string,
 };
