@@ -17,6 +17,5 @@ const inputs = {
 	repo: 				process.env.GITHUB_REPOSITORY!,
 };
 
-// process.env.GH_TOKEN = ac.getInput("token");
-const token = ac.getInput("token");
-await main(inputs, token);
+process.env.GH_TOKEN = ac.getInput("token");
+await main(inputs);

@@ -36,8 +36,9 @@ Whether or not to clear the wiki before generating the new files. This is useful
 Whether or not to include a warning comment at the top of each generated file telling the viewer not to edit it and pointing them to the source file to edit instead.
 
 ## Desired future features
+- Option to not clear generated pages + option to clear user created pages (need to clear generated pages for deleting pages to sync).
 - Option to include front-matter in the markdown files to specify properties like the sidebar title etc.
-- Option to create pull request to main repo if there are documents that have been created using github's browser interface for creating wiki pages.
+- Option to create pull request to main repo if there are documents that have been created using github's browser interface for creating wiki pages (see [gollum](https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#gollum)).
 - Option to include additional stuff at the top and bottom of the sidebar
 - option to generate index files for directories that have links to all the included files and sub indexes for subdirectories
 - Rework formatLinksInFile so it is less reliant on all the parameters of formatLocalLinks

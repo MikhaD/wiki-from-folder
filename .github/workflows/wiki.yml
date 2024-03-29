@@ -1,47 +1,28 @@
-# name: Generate Wiki
+name: Generate Wiki
 
-# on:
-#   push:
-#     branches: [main]
-
-# jobs:
-#   update:
-#     name: Generate wiki from docs
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: Checkout
-#         uses: actions/checkout@v4
-
-#       - name: Setup Node
-#         uses: actions/setup-node@v4
-#         with:
-#           node-version: 20
-
-#       - name: install dependencies
-#         run: npm ci
-
-#       - name: This action
-#         uses: ./
-#         with:
-#             folders: "docs"
-#             prefix-files-with-directory: false
-#             clear-wiki: true
-
-name: Publish wiki
 on:
   push:
     branches: [main]
 
-concurrency:
-  group: publish-wiki
-  cancel-in-progress: true
-permissions:
-  contents: write
 jobs:
-  publish-wiki:
+  update:
+    name: Generate wiki from docs
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: Andrew-Chen-Wang/github-wiki-action@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          path: docs
+          node-version: 20
+
+      - name: install dependencies
+        run: npm ci
+
+      - name: This action
+        uses: ./
+        with:
+            folders: "docs"
+            prefix-files-with-directory: false
+            clear-wiki: true

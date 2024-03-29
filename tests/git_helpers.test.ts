@@ -60,12 +60,12 @@ describe("Git Helper Functions", () => {
 		it("No clear", async () => {
 			expect(await cloneWiki("owner/repo", "temp")).to.be.undefined;
 			expect(execStub.callCount).to.equal(1);
-			expect(execStub.calledWith("git", ["clone", "--depth=1", "https://github/com/owner/repo.wiki.git", "temp"])).to.be.true;
+			expect(execStub.calledWith("git", ["clone", "--depth=1", "https://github.com/owner/repo.wiki.git", "temp"])).to.be.true;
 		});
 		it("Clear", async () => {
 			expect(await cloneWiki("owner/repo", "temp", true)).to.be.undefined;
 			expect(execStub.callCount).to.equal(2);
-			expect(execStub.calledWith("git", ["clone", "--depth=1", "https://github/com/owner/repo.wiki.git", "temp"])).to.be.true;
+			expect(execStub.calledWith("git", ["clone", "--depth=1", "https://github.com/owner/repo.wiki.git", "temp"])).to.be.true;
 			expect(execStub.calledWith("rm", ["-r", "temp/*"])).to.be.true;
 		});
 	});
