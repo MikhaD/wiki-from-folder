@@ -14,8 +14,6 @@ jobs:
 
       - name: Try cloning wiki
         run: |
-          gh auth setup-git
-          echo ${{github.server_url}}/${{github.repository}}.wiki.git
           git clone ${{github.server_url}}/${{github.repository}}.wiki.git
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

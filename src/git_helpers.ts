@@ -1,6 +1,7 @@
 
 import exec from "@actions/exec";
 import { EMAIL_REGEX } from "./utils.js";
+import { execSync } from "child_process";
 
 /**
  * An error class for errors that occur during execution of shell commands.
@@ -53,7 +54,8 @@ export async function commitAndPush(files: string[], message: string) {
  */
 export async function cloneWiki(repo: string, cloneTo: string, clear: boolean = false) {
 	let errorAccumulator = 0;
-	errorAccumulator += await exec.exec("gh", ["auth", "setup-git"])
+	execSync("gh auth setup-git");
+	// errorAccumulator += await exec.exec("gh", ["auth", "setup-git"])
 	errorAccumulator += await exec.exec(`git config --global --add safe.directory ${process.cwd()}`);
 	errorAccumulator += await exec.exec("git", ["clone", "--depth=1", `github.com/${repo}.wiki.git`]);
 	if (clear) {
