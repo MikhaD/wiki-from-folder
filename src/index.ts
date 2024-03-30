@@ -4,16 +4,16 @@ import * as utils from "./utils.js";
 
 const inputs = {
 	folders:			utils.formatAsList(ac.getInput("folders")),
-	sidebar:			ac.getBooleanInput("sidebar"),
-	prefixFilesWithDir:	ac.getBooleanInput("prefix-files-with-directory"),
+	sidebar:			true /*ac.getBooleanInput("sidebar")*/,
+	prefixFilesWithDir:	false /*ac.getBooleanInput("prefix-files-with-directory")*/,
 	sidebarFileTypes:	[".md", ".markdown"],
 	// sidebarFileTypes:	utils.formatAsList(ac.getInput("sidebar-file-types")).map((s) => {
 	// 						if (!s.startsWith(".")) s = `.${s}`;
 	// 						return s.toLowerCase();
 	// 					}),
 	branchToLinkTo:		ac.getInput("branch-to-link-to"),
-	clearWiki:			ac.getBooleanInput("clear-wiki"),
-	editWarning:		ac.getBooleanInput("edit-warning"),
+	clearWiki:			true /*ac.getBooleanInput("clear-wiki")*/,
+	editWarning:		false /*ac.getBooleanInput("edit-warning")*/,
 	host:				ac.getInput("host"),
 	repo: 				process.env.GITHUB_REPOSITORY!,
 };

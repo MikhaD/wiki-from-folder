@@ -27,4 +27,3 @@ jobs:
             prefix-files-with-directory: false
             clear-wiki: true
             token: ${{ secrets.GITHUB_TOKEN }}
-            sidebar: true
