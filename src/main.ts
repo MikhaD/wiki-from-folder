@@ -16,7 +16,7 @@ import path from "path";
  */
 export default async function main(inputs: MainInputs) {
 	try {
-		const tempDir = `wiki-working-directory-${Date.now()}`;
+		const tempDir = `../wiki-working-directory-${Date.now()}`;
 
 		const wiki = gh.cloneWiki(inputs.repo, inputs.host, tempDir);
 
@@ -41,16 +41,11 @@ export default async function main(inputs: MainInputs) {
 		await wiki; // wait for the wiki to clone
 
 		if (inputs.clearWiki) {
-			ac.info("#################### Before Clearing ####################");
-			await exec.exec("ls", ["-l", tempDir]);
 			for (const file of fs.readdirSync(tempDir)) {
-				ac.info(`Supposedly removing ${path.join(tempDir, file)}`);
-				io.rmRF(path.join(tempDir, file));
+				if (!file.startsWith(".")) {
+					io.rmRF(path.join(tempDir, file));
+				}
 			  }
-			// await exec.exec("rm", ["-rf", path.join(tempDir, "*")]);
-			ac.info("#################@### After Clearing ####################");
-
-			await exec.exec("ls", ["-l", tempDir]);
 		}
 		// Create the directory for the generated files if it doesn't exist
 		fs.mkdirSync(path.join(tempDir, inputs.generatedFilesDir), { recursive: true });
