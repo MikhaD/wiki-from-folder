@@ -103,6 +103,8 @@ function __processFiles(dir: DirectoryContents, tempDir: string, inputs: MainInp
 		} else {
 			ac.info(`working directory: ${process.cwd()}`);
 			ac.info(fs.readdirSync(".").join(" "));
+			exec.exec("ls", ["-l"]);
+			ac.info(fullPath);
 			const text = fs.readFileSync(fullPath, "utf8");
 			let fileContents = utils.formatLinksInFile(text, inputs.repo, inputs.branchToLinkTo, dir.path, inputs.sidebarFileTypes, inputs.prefixFilesWithDir);
 			if (inputs.editWarning) {

@@ -387,7 +387,7 @@ This is [some][def_1] markdown [text][def_2] that [is][def_3] going [to][def_4] 
 
 		after(() => {
 			readdirSyncStub.restore();
-		})
+		});
 	});
 	describe("centerText", () => {
 		it("should center text", () => {

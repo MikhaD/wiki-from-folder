@@ -2,8 +2,7 @@ import sinon from "sinon";
 import { expect } from "chai";
 import { processFiles } from "../src/main.js";
 import ac from "@actions/core";
-import fs, { Dirent } from "fs";
-import SidebarBuilder from "../src/SidebarBuilder.js";
+import fs from "fs";
 import { files } from "./testing_utilities.js";
 import { MainInputs } from "../src/types.js";
 
