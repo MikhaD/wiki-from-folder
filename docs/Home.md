@@ -46,3 +46,10 @@ Whether or not to include a warning comment at the top of each generated file te
 - Add more async for reading and writing files
 - Add the ability to detect when a file links to another markdown file in any of the folders being published to the wiki
 - Work with other types of files, not just markdown.
+
+### Link testing
+[index.ts](../src/index.ts)
+[index.ts 10-13](../src/index.ts#L10-L13)
+[readme](../README.md)
+[features](features/features.md)
+[/features](/features/features.md)
