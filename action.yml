@@ -9,19 +9,19 @@ inputs:
     description: >-
       The directory or list of folders to generate the wiki from. Default is docs. If you wish to
       include multiple directories, separate them with a comma (docs, adr etc.).
-    default: 'docs'
+    default: "docs"
   sidebar:
     description: >-
       Whether or not you wish to generate a custom sidebar with categories based on the
       subdirectories of the input directory. Defaults to true.
-    default: true
+    default: "true"
   prefix-files-with-directory:
     description: >-
       Whether or not to prefix file names with the directory they are in. This can be useful if you
       have multiple files with the same name in different directories, as github wikis completely
       ignore subdirectories and flatten everything out. Prefixed files will be named
       dir|filename.ext. Defaults to false.
-    default: false
+    default: "false"
   branch-to-link-to:
     description: >-
       The branch to link to when wiki files link to code, images etc. Defaults to the default branch
@@ -31,12 +31,12 @@ inputs:
     description: >-
       Whether or not to clear the wiki before generating the new files. Defaults to
       false. This is useful if you do not want wiki pages from anywhere other than this action.
-    default: false
+    default: "false"
   edit-warning:
     description: >-
       Whether or not to include a warning comment at the top of each generated file telling the
       viewer not to edit it and pointing them to the source file to edit instead. Defaults to true.
-    default: true
+    default: "true"
   token:
     description: >-
       The token to use to authenticate with the repository. This is required if you want to push
@@ -54,9 +54,9 @@ runs:
     - id: main
       shell: bash
       run: |
-          gh auth setup-git
-          git clone --depth=1 $GH_HOST/$GH_REPO.wiki.git wiki
-          node dist/index.js
+        gh auth setup-git
+        git clone --depth=1 $GH_HOST/$GH_REPO.wiki.git wiki
+        node dist/index.js
       env:
         GH_TOKEN: ${{ inputs.token }}
         GH_HOST: ${{ inputs.host }}
