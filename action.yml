@@ -49,15 +49,18 @@ inputs:
     default: ${{ github.server_url }}
 
 runs:
-  using: composite
-  steps:
-    - id: main
-      shell: bash
-      run: |
-        gh auth setup-git
-        git clone --depth=1 $GH_HOST/$GH_REPO.wiki.git wiki
-        node dist/index.js
-      env:
-        GH_TOKEN: ${{ inputs.token }}
-        GH_HOST: ${{ inputs.host }}
-        GH_REPO: ${{ github.repository }}
+  using: node20
+  main: dist/index.js
+# runs:
+#   using: composite
+#   steps:
+#     - id: main
+#       shell: bash
+#       run: |
+#         gh auth setup-git
+#         git clone --depth=1 $GH_HOST/$GH_REPO.wiki.git wiki
+#         node dist/index.js
+#       env:
+#         GH_TOKEN: ${{ inputs.token }}
+#         GH_HOST: ${{ inputs.host }}
+#         GH_REPO: ${{ github.repository }}
