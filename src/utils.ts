@@ -134,6 +134,7 @@ export function highestLevelDir(file: string): string {
  * link will be left as is.
  * @param link - The link to format.
  * @param repo - The name of the repo the action is running in in the form `owner/repo`.
+ * @param branchToLinkTo - The branch of the repo to link to.
  * @param currentDir - The current directory of the file being formatted.
  * @param extensions - A list of file extensions to be be considered wiki files (linked to the wiki instead of the repo).
  * @param prefixWithDir - Whether to prefix the file name being linked to with the directory it is in.
@@ -145,6 +146,8 @@ export function formatLocalLink(link: string, repo: string, branchToLinkTo: stri
 			// let fileName = path.basename(url);
 			// This is a link to another wiki page
 			if (extensions.includes(path.extname(link))) {
+				console.log("newPath", newPath);
+				console.log("currentDir", currentDir);
 				currentDir = path.join(currentDir, path.dirname(link));
 				let file = path.basename(link);
 				file = standardizeFileName(file, prefixWithDir ? currentDir : undefined);
@@ -171,6 +174,7 @@ export function formatLocalLink(link: string, repo: string, branchToLinkTo: stri
  * formatted file names.
  * @param path - The path to the markdown file to format.
  * @param repo - The name of the repo the action is running in in the form `owner/repo`.
+ * @param branchToLinkTo - The branch of the repo to link to.
  * @param currentDir - The current directory of the file being formatted.
  * @param extensions - A list of file extensions to be be considered wiki files (linked to the wiki instead of the repo).
  * @param prefixFileWithDir - Whether to prefix the file name with the directory it is in.
