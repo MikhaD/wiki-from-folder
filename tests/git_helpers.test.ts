@@ -58,12 +58,12 @@ describe("Git Helper Functions", () => {
 
 	describe("cloneWiki", () => {
 		it("No clear", async () => {
-			expect(await cloneWiki("owner/repo", "temp")).to.be.undefined;
+			expect(await cloneWiki("owner/repo", "https://github.com", "temp")).to.be.undefined;
 			expect(execStub.callCount).to.equal(2);
 			expect(execStub.calledWith("git", ["clone", "--depth=1", "https://github.com/owner/repo.wiki.git", "temp"])).to.be.true;
 		});
 		it("Clear", async () => {
-			expect(await cloneWiki("owner/repo", "temp", true)).to.be.undefined;
+			expect(await cloneWiki("owner/repo", "https://github.com", "temp", true)).to.be.undefined;
 			expect(execStub.callCount).to.equal(3);
 			expect(execStub.calledWith("git", ["clone", "--depth=1", "https://github.com/owner/repo.wiki.git", "temp"])).to.be.true;
 			expect(execStub.calledWith("rm", ["-r", "temp/*"])).to.be.true;
@@ -97,7 +97,7 @@ describe("Git Helper Functions", () => {
 		it("cloneWiki clear", async () => {
 			let message = "didn't throw error";
 			try {
-				await cloneWiki("owner/repo", "temp");
+				await cloneWiki("owner/repo", "https://github.com", "temp");
 			} catch (error) {
 				message = (error as Error).message;
 			}
@@ -107,7 +107,7 @@ describe("Git Helper Functions", () => {
 		it("cloneWiki", async () => {
 			let message = "didn't throw error";
 			try {
-				await cloneWiki("owner/repo", "temp", true);
+				await cloneWiki("owner/repo", "https://github.com", "temp", true);
 			} catch (error) {
 				message = (error as Error).message;
 			}

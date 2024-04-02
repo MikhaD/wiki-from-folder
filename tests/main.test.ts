@@ -87,6 +87,7 @@ describe("processFiles", () => {
 				prefixFilesWithDir: false,
 				branchToLinkTo: "main",
 				editWarning: true,
+				host: "https://github.com"
 			};
 
 			const sb = processFiles(dir, tempDir, data, true);
@@ -140,6 +141,7 @@ describe("processFiles", () => {
 				prefixFilesWithDir: true,
 				branchToLinkTo: "main",
 				editWarning: false,
+				host: "https://github.com"
 			};
 
 			const sb = processFiles(dir, tempDir, data, true);
@@ -192,6 +194,7 @@ describe("processFiles", () => {
 					prefixFilesWithDir: Boolean(i),
 					branchToLinkTo: "main",
 					editWarning: false,
+					host: "https://github.com"
 				};
 
 				expect(processFiles(dir, tempDir, data, false)).to.be.undefined;
@@ -215,6 +218,7 @@ describe("processFiles", () => {
 			prefixFilesWithDir: false,
 			branchToLinkTo: "main",
 			editWarning: true,
+			host: "https://github.com"
 		};
 
 		const dir = {
@@ -252,7 +256,7 @@ describe("processFiles", () => {
 				""
 			].join("\n")
 		]);
-	})
+	});
 
 	after(() => {
 		infoStub.restore();

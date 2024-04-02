@@ -47,13 +47,14 @@ export async function commitAndPush(files: string[], message: string) {
 /**
  * Clone the wiki for a given repo to a specified folder and optionally remove all the existing files
  * @param repo - The name of the repo to clone the wiki for in the form `owner/repo`
+ * @param host - The host to clone the wiki from. Typically `https://github.com`
  * @param cloneTo - The name of the folder to clone the wiki to
  * @param clear - Whether to clear the files downloaded from the wiki
  * @throws ExecError
  */
 export async function cloneWiki(repo: string, host: string, cloneTo: string, clear: boolean = false) {
 	let errorAccumulator = 0;
-	errorAccumulator += await exec.exec("gh", ["auth", "setup-git"])
+	errorAccumulator += await exec.exec("gh", ["auth", "setup-git"]);
 	errorAccumulator += await exec.exec("git", ["clone", "--depth=1", `${host}/${repo}.wiki.git`, cloneTo]);
 	if (clear) {
 		errorAccumulator += await exec.exec("rm", ["-r", `${cloneTo}/*`]);
