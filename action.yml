@@ -47,6 +47,12 @@ inputs:
     description: Could this be the issue?
     required: true
     default: ${{ github.server_url }}
+  generated-files-directory:
+    description: >-
+      The directory in the wiki repository to store the generated files in. Defaults to generated.
+      This is useful because it allows you to keep the generated files separate from any other files
+      in the wiki, such as those created by users.
+    default: "generated"
 
 runs:
   using: node20

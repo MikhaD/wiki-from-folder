@@ -18,4 +18,5 @@ type MainInputs = {
 	editWarning:		boolean,
 	repo: 				string,
 	host: 				string,
+	generatedFilesDir:	string,
 };

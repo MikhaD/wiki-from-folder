@@ -16,6 +16,7 @@ const inputs = {
 	editWarning: ac.getBooleanInput("edit-warning"),
 	host: ac.getInput("host"),
 	repo: process.env.GITHUB_REPOSITORY!,
+	generatedFilesDir: ac.getInput("generated-files-directory"),
 };
 
 process.env.GH_TOKEN = ac.getInput("token");

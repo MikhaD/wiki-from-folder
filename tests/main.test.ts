@@ -86,7 +86,8 @@ describe("processFiles", () => {
 				prefixFilesWithDir: false,
 				branchToLinkTo: "main",
 				editWarning: true,
-				host: "https://github.com"
+				host: "https://github.com",
+				generatedFilesDir: "generated",
 			};
 
 			const sb = processFiles(dir, tempDir, data, true);
@@ -140,7 +141,8 @@ describe("processFiles", () => {
 				prefixFilesWithDir: true,
 				branchToLinkTo: "main",
 				editWarning: false,
-				host: "https://github.com"
+				host: "https://github.com",
+				generatedFilesDir: "generated",
 			};
 
 			const sb = processFiles(dir, tempDir, data, true);
@@ -193,8 +195,9 @@ describe("processFiles", () => {
 					prefixFilesWithDir: Boolean(i),
 					branchToLinkTo: "main",
 					editWarning: false,
-					host: "https://github.com"
-				};
+					host: "https://github.com",
+				generatedFilesDir: "generated",
+			};
 
 				expect(processFiles(dir, tempDir, data, false)).to.be.undefined;
 				expect(infoStub.callCount).to.equal(2);
@@ -217,7 +220,8 @@ describe("processFiles", () => {
 			prefixFilesWithDir: false,
 			branchToLinkTo: "main",
 			editWarning: true,
-			host: "https://github.com"
+			host: "https://github.com",
+			generatedFilesDir: "generated",
 		};
 
 		const dir = {

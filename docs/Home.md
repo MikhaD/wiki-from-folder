@@ -39,6 +39,7 @@ Whether or not to include a warning comment at the top of each generated file te
 - Option to not clear generated pages + option to clear user created pages (need to clear generated pages for deleting pages to sync).
 - Option to include front-matter in the markdown files to specify properties like the sidebar title etc.
 - Option to create pull request to main repo if there are documents that have been created using github's browser interface for creating wiki pages (see [gollum](https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#gollum)).
+	- When processing files add front-matter with the original file path
 - Option to include additional stuff at the top and bottom of the sidebar
 - option to generate index files for directories that have links to all the included files and sub indexes for subdirectories
 - Rework formatLinksInFile so it is less reliant on all the parameters of formatLocalLinks

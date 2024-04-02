@@ -39,6 +39,12 @@ export default async function main(inputs: MainInputs) {
 
 		await wiki; // wait for the wiki to clone
 
+		if (inputs.clearWiki) {
+			await exec.exec("rm", ["-r", path.join(tempDir, "*")]);
+		}
+		// Create the directory for the generated files if it doesn't exist
+		fs.mkdirSync(path.join(tempDir, inputs.generatedFilesDir), { recursive: true });
+
 		if (inputs.sidebar) {
 			const sb = processFiles(contents, tempDir, inputs, true);
 			fs.writeFileSync(path.join(tempDir, "_Sidebar.md"), sb.dumps());
@@ -47,9 +53,6 @@ export default async function main(inputs: MainInputs) {
 		}
 
 		process.chdir(tempDir);
-		if (inputs.clearWiki) {
-			await exec.exec("rm", ["-r", `*`]);
-		}
 		gh.configureGit();
 		gh.commitAndPush(["."], ":memo: updated wiki");
 	} catch (e) {
@@ -110,7 +113,7 @@ function __processFiles(dir: DirectoryContents, tempDir: string, inputs: MainInp
 			if (inputs.editWarning) {
 				fileContents = utils.createEditWarning(fullPath) + "\n" + fileContents;
 			}
-			fs.writeFileSync(path.join(tempDir, "generated", formattedFileName), fileContents);
+			fs.writeFileSync(path.join(tempDir, inputs.generatedFilesDir, formattedFileName), fileContents);
 			if (sb) {
 				sb.addLink(utils.headerFromFileName(file.name), formattedFileName);
 			}
