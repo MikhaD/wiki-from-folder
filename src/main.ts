@@ -41,11 +41,13 @@ export default async function main(inputs: MainInputs) {
 		await wiki; // wait for the wiki to clone
 
 		if (inputs.clearWiki) {
+			const removals = [];
 			for (const file of fs.readdirSync(tempDir)) {
 				if (!file.startsWith(".")) {
-					io.rmRF(path.join(tempDir, file));
+					removals.push(io.rmRF(path.join(tempDir, file)));
 				}
-			  }
+			}
+			await Promise.allSettled(removals);
 		}
 		// Create the directory for the generated files if it doesn't exist
 		fs.mkdirSync(path.join(tempDir, inputs.generatedFilesDir), { recursive: true });
