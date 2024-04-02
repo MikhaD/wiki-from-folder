@@ -8,6 +8,7 @@ import fs from "fs";
 
 import SidebarBuilder from "./SidebarBuilder.js";
 import path from "path";
+import { execSync } from "child_process";
 
 
 /**
@@ -60,12 +61,14 @@ export default async function main(inputs: MainInputs) {
 		}
 
 		process.chdir(tempDir);
-		if (await exec.exec("git", ["diff", "--exit-code"])) {
+
+		if (execSync("git status --porcelain").length > 0) {
 			await gh.configureGit();
 			await gh.commitAndPush(["."], ":memo: updated wiki");
 		} else {
 			ac.info("No documentation changes detected, skipping push");
 		}
+
 	} catch (e) {
 		ac.error(e as string);
 		ac.setFailed("Action failed");
