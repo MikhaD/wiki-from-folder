@@ -44,6 +44,7 @@ export default async function main(inputs: MainInputs) {
 			ac.info("#################### Before Clearing ####################");
 			await exec.exec("ls", ["-l", tempDir]);
 			for (const file of fs.readdirSync(tempDir)) {
+				ac.info(`Supposedly removing ${path.join(tempDir, file)}`);
 				io.rmRF(path.join(tempDir, file));
 			  }
 			// await exec.exec("rm", ["-rf", path.join(tempDir, "*")]);
