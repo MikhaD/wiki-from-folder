@@ -1,9 +1,9 @@
+import path from "path";
 import main from "./main.js";
 import ac from "@actions/core";
-import * as utils from "./utils.js";
 
 const inputs = {
-	folders: utils.formatAsList(ac.getInput("folders")),
+	folders: ac.getMultilineInput("folders").map(dir => path.join(dir, "/")),
 	sidebar: ac.getBooleanInput("sidebar"),
 	prefixFilesWithDir: ac.getBooleanInput("prefix-files-with-directory"),
 	sidebarFileTypes: [".md", ".markdown"],

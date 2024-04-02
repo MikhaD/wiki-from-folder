@@ -325,6 +325,8 @@ This is [some][def_1] markdown [text][def_2] that [is][def_3] going [to][def_4] 
 		expect(highestLevelDir("file.md")).to.equal(".");
 		expect(highestLevelDir("/path/to/file.md")).to.equal("/");
 		expect(highestLevelDir("../path/to/file.md")).to.equal("..");
+		expect(highestLevelDir("docs")).to.equal(".");
+		expect(highestLevelDir("docs/")).to.equal("docs");
 	});
 
 	it("wikiURL", () => {

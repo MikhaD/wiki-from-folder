@@ -60,7 +60,7 @@ export default async function main(inputs: MainInputs) {
 		}
 
 		process.chdir(tempDir);
-		if (await exec.exec("git", ["--diff", "--exit-code"])) {
+		if (await exec.exec("git", ["diff", "--exit-code"])) {
 			await gh.configureGit();
 			await gh.commitAndPush(["."], ":memo: updated wiki");
 		} else {
