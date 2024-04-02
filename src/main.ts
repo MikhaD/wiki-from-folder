@@ -1,8 +1,8 @@
 import ac from "@actions/core";
 import exec from "@actions/exec";
+import io from "@actions/io";
 import * as utils from "./utils.js";
 import * as gh from "./git_helpers.js";
-import io from "@actions/io";
 import { DirectoryContents, MainInputs } from "./types";
 import fs from "fs";
 
@@ -43,7 +43,9 @@ export default async function main(inputs: MainInputs) {
 		if (inputs.clearWiki) {
 			ac.info("#################### Before Clearing ####################");
 			await exec.exec("ls", ["-l", tempDir]);
-			io.rmRF(path.join(tempDir, "*"));
+			for (const file of fs.readdirSync(tempDir)) {
+				io.rmRF(path.join(tempDir, file));
+			  }
 			// await exec.exec("rm", ["-rf", path.join(tempDir, "*")]);
 			ac.info("#################@### After Clearing ####################");
 
