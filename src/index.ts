@@ -1,6 +1,7 @@
 import main from "./main.js";
 import ac from "@actions/core";
 import * as utils from "./utils.js";
+ac.info("######################### before inputs #########################");
 
 const inputs = {
 	folders: utils.formatAsList(ac.getInput("folders")),
@@ -17,6 +18,7 @@ const inputs = {
 	host: ac.getInput("host"),
 	repo: process.env.GITHUB_REPOSITORY!,
 };
+ac.info("######################### before main #########################");
 
 process.env.GH_TOKEN = ac.getInput("token");
 await main(inputs);
