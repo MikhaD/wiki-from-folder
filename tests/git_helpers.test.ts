@@ -62,12 +62,6 @@ describe("Git Helper Functions", () => {
 			expect(execStub.callCount).to.equal(2);
 			expect(execStub.calledWith("git", ["clone", "--depth=1", "https://github.com/owner/repo.wiki.git", "temp"])).to.be.true;
 		});
-		it("Clear", async () => {
-			expect(await cloneWiki("owner/repo", "https://github.com", "temp", true)).to.be.undefined;
-			expect(execStub.callCount).to.equal(3);
-			expect(execStub.calledWith("git", ["clone", "--depth=1", "https://github.com/owner/repo.wiki.git", "temp"])).to.be.true;
-			expect(execStub.calledWith("rm", ["-r", "temp/*"])).to.be.true;
-		});
 	});
 
 	describe("Failed exec", () => {
@@ -94,7 +88,7 @@ describe("Git Helper Functions", () => {
 			expect(message).to.equal("Failed to initialize git [6]");
 			expect(execStub.callCount).to.equal(3);
 		});
-		it("cloneWiki clear", async () => {
+		it("cloneWiki", async () => {
 			let message = "didn't throw error";
 			try {
 				await cloneWiki("owner/repo", "https://github.com", "temp");
@@ -103,16 +97,6 @@ describe("Git Helper Functions", () => {
 			}
 			expect(message).to.equal("Failed to clone wiki [4]");
 			expect(execStub.callCount).to.equal(2);
-		});
-		it("cloneWiki", async () => {
-			let message = "didn't throw error";
-			try {
-				await cloneWiki("owner/repo", "https://github.com", "temp", true);
-			} catch (error) {
-				message = (error as Error).message;
-			}
-			expect(message).to.equal("Failed to clone wiki [6]");
-			expect(execStub.callCount).to.equal(3);
 		});
 	});
 });

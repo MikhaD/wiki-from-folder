@@ -1,4 +1,5 @@
 import ac from "@actions/core";
+import exec from "@actions/exec";
 import * as utils from "./utils.js";
 import * as gh from "./git_helpers.js";
 import { DirectoryContents, MainInputs } from "./types";
@@ -16,7 +17,7 @@ export default async function main(inputs: MainInputs) {
 	try {
 		const tempDir = `../wiki-working-directory-${Date.now()}`;
 
-		const wiki = gh.cloneWiki(inputs.repo, inputs.host, tempDir, inputs.clearWiki);
+		const wiki = gh.cloneWiki(inputs.repo, inputs.host, tempDir);
 
 		let contents: DirectoryContents = {
 			path: "",
@@ -45,8 +46,10 @@ export default async function main(inputs: MainInputs) {
 			processFiles(contents, tempDir, inputs, false);
 		}
 
-		// clone the wiki repo
 		process.chdir(tempDir);
+		if (inputs.clearWiki) {
+			await exec.exec("rm", ["-r", `*`]);
+		}
 		gh.configureGit();
 		gh.commitAndPush(["."], ":memo: updated wiki");
 	} catch (e) {
