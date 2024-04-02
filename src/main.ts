@@ -13,46 +13,50 @@ import path from "path";
  * @param repo - The repo the action is running in in the format `owner/repo`.
  */
 export default async function main(inputs: MainInputs) {
-	// try {
-	const tempDir = `../wiki-working-directory-${Date.now()}`;
-	const wiki = gh.cloneWiki(inputs.repo, inputs.host, tempDir, inputs.clearWiki);
+	try {
+		const tempDir = `../wiki-working-directory-${Date.now()}`;
+		ac.info("######################### before cloneWiki #########################");
 
-	let contents: DirectoryContents = {
-		path: "",
-		totalFiles: 0,
-		dirs: [],
-		files: [],
-	};
+		const wiki = gh.cloneWiki(inputs.repo, inputs.host, tempDir, inputs.clearWiki);
 
-	if (inputs.folders.length > 1) {
-		for (const dir of inputs.folders) {
-			const dc = utils.parseDirectoryContents(dir, inputs.sidebarFileTypes);
-			contents.totalFiles += dc.totalFiles;
-			contents.dirs.push(dc);
+		let contents: DirectoryContents = {
+			path: "",
+			totalFiles: 0,
+			dirs: [],
+			files: [],
+		};
+		ac.info("######################### before parseDirectoryContents #########################");
+		if (inputs.folders.length > 1) {
+			for (const dir of inputs.folders) {
+				const dc = utils.parseDirectoryContents(dir, inputs.sidebarFileTypes);
+				contents.totalFiles += dc.totalFiles;
+				contents.dirs.push(dc);
+			}
+		} else {
+			contents = utils.parseDirectoryContents(inputs.folders[0], inputs.sidebarFileTypes);
 		}
-	} else {
-		contents = utils.parseDirectoryContents(inputs.folders[0], inputs.sidebarFileTypes);
+		// Don't make the folder containing the docs a section in the sidebar
+		contents.path = "";
+
+		await wiki; // wait for the wiki to clone
+		ac.info("######################### before processFiles #########################");
+
+		if (inputs.sidebar) {
+			const sb = processFiles(contents, tempDir, inputs, true);
+			fs.writeFileSync(path.join(tempDir, "_Sidebar.md"), sb.dumps());
+		} else {
+			processFiles(contents, tempDir, inputs, false);
+		}
+		ac.info("######################### before git operations #########################");
+
+		// clone the wiki repo
+		process.chdir(tempDir);
+		gh.configureGit();
+		gh.commitAndPush(["."], ":memo: updated wiki");
+	} catch (e) {
+		ac.error(e as string);
+		ac.setFailed("Action failed");
 	}
-	// Don't make the folder containing the docs a section in the sidebar
-	contents.path = "";
-
-	await wiki; // wait for the wiki to clone
-
-	if (inputs.sidebar) {
-		const sb = processFiles(contents, tempDir, inputs, true);
-		fs.writeFileSync(path.join(tempDir, "_Sidebar.md"), sb.dumps());
-	} else {
-		processFiles(contents, tempDir, inputs, false);
-	}
-
-	// clone the wiki repo
-	process.chdir(tempDir);
-	gh.configureGit();
-	gh.commitAndPush(["."], ":memo: updated wiki");
-	// } catch (e) {
-	// 	ac.error(e as string);
-	// 	ac.setFailed("Action failed");
-	// }
 }
 
 /**
