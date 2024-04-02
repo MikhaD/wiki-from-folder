@@ -98,6 +98,8 @@ function __processFiles(dir: DirectoryContents, tempDir: string, inputs: MainInp
 			}
 			fs.copyFileSync(fullPath, path.join(tempDir, file.name));
 		} else {
+			ac.info(`working directory: ${process.cwd()}`);
+			ac.info(fs.readdirSync(".").join(" "));
 			const text = fs.readFileSync(fullPath, "utf8");
 			let fileContents = utils.formatLinksInFile(text, inputs.repo, inputs.branchToLinkTo, dir.path, inputs.sidebarFileTypes, inputs.prefixFilesWithDir);
 			if (inputs.editWarning) {

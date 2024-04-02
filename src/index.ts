@@ -22,6 +22,6 @@ try {
 	process.env.GH_TOKEN = ac.getInput("token");
 	await main(inputs);
 } catch (e) {
-	console.error(e.stack);
+	ac.error(e.stack);
 	ac.setFailed("Action failed");
 }
