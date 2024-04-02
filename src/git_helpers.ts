@@ -57,6 +57,8 @@ export async function cloneWiki(repo: string, host: string, cloneTo: string, cle
 	errorAccumulator += await exec.exec("gh", ["auth", "setup-git"]);
 	errorAccumulator += await exec.exec("git", ["clone", "--depth=1", `${host}/${repo}.wiki.git`, cloneTo]);
 	if (clear) {
+		console.log("---------------------- Listing cloned wiki ----------------------");
+		await exec.exec("ls", [cloneTo]);
 		errorAccumulator += await exec.exec("rm", ["-r", `${cloneTo}/*`]);
 	}
 	if (errorAccumulator > 0) {

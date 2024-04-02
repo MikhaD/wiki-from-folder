@@ -15,7 +15,6 @@ import path from "path";
 export default async function main(inputs: MainInputs) {
 	try {
 		const tempDir = `../wiki-working-directory-${Date.now()}`;
-		ac.info("######################### before cloneWiki #########################");
 
 		const wiki = gh.cloneWiki(inputs.repo, inputs.host, tempDir, inputs.clearWiki);
 
@@ -25,7 +24,6 @@ export default async function main(inputs: MainInputs) {
 			dirs: [],
 			files: [],
 		};
-		ac.info("######################### before parseDirectoryContents #########################");
 		if (inputs.folders.length > 1) {
 			for (const dir of inputs.folders) {
 				const dc = utils.parseDirectoryContents(dir, inputs.sidebarFileTypes);
@@ -39,7 +37,6 @@ export default async function main(inputs: MainInputs) {
 		contents.path = "";
 
 		await wiki; // wait for the wiki to clone
-		ac.info("######################### before processFiles #########################");
 
 		if (inputs.sidebar) {
 			const sb = processFiles(contents, tempDir, inputs, true);
@@ -47,7 +44,6 @@ export default async function main(inputs: MainInputs) {
 		} else {
 			processFiles(contents, tempDir, inputs, false);
 		}
-		ac.info("######################### before git operations #########################");
 
 		// clone the wiki repo
 		process.chdir(tempDir);
