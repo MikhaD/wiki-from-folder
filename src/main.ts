@@ -35,7 +35,7 @@ export default async function main(inputs: MainInputs) {
 			contents = utils.parseDirectoryContents(inputs.folders[0], inputs.sidebarFileTypes);
 		}
 		// Don't make the folder containing the docs a section in the sidebar
-		contents.path = "";
+		// contents.path = "";
 
 		await wiki; // wait for the wiki to clone
 
