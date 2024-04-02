@@ -41,11 +41,11 @@ export default async function main(inputs: MainInputs) {
 
 		if (inputs.clearWiki) {
 			ac.info("#################### Before Clearing ####################");
-			await exec.exec("ls", ["-l"]);
+			await exec.exec("ls", ["-l", tempDir]);
 			await exec.exec("rm", ["-rf", path.join(tempDir, "*")]);
 			ac.info("#################@### After Clearing ####################");
 
-			await exec.exec("ls", ["-l"]);
+			await exec.exec("ls", ["-l", tempDir]);
 		}
 		// Create the directory for the generated files if it doesn't exist
 		fs.mkdirSync(path.join(tempDir, inputs.generatedFilesDir), { recursive: true });
@@ -58,8 +58,8 @@ export default async function main(inputs: MainInputs) {
 		}
 
 		process.chdir(tempDir);
-		gh.configureGit();
-		gh.commitAndPush(["."], ":memo: updated wiki");
+		await gh.configureGit();
+		await gh.commitAndPush(["."], ":memo: updated wiki");
 	} catch (e) {
 		ac.error(e as string);
 		ac.setFailed("Action failed");
@@ -109,10 +109,6 @@ function __processFiles(dir: DirectoryContents, tempDir: string, inputs: MainInp
 			}
 			fs.copyFileSync(fullPath, path.join(tempDir, file.name));
 		} else {
-			ac.info(`working directory: ${process.cwd()}`);
-			ac.info(fs.readdirSync(".").join(" "));
-			exec.exec("ls", ["-l"]);
-			ac.info(fullPath);
 			const text = fs.readFileSync(fullPath, "utf8");
 			let fileContents = utils.formatLinksInFile(text, inputs.repo, inputs.branchToLinkTo, dir.path, inputs.sidebarFileTypes, inputs.prefixFilesWithDir);
 			if (inputs.editWarning) {
