@@ -23,25 +23,27 @@ name: Generate Wiki
 
 on:
   push:
-	branches: [ main ]
-	paths:
-	  - docs/**
-	  - .github/workflows/wiki.yml
+    branches: [ main ]
+    paths:
+      - docs/**
+      - .github/workflows/wiki.yml
 
 jobs:
   generate-wiki:
-	runs-on: ubuntu-latest
-	steps:
-	- uses: actions/checkout@v4
-	- uses: quicklysign/wiki-from-folder@main
-	  with:
-	#   These are the default values. You do not need to include them in your workflow file unless you want to change them.
-		folders: 'docs'
-		sidebar: true
-		prefix-files-with-directory: false
-		branch-to-link-to: main # This defaults to the default branch of the repository, which is usually main, but could be anything
-		clear-wiki: false
-		edit-warning: true
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: quicklysign/wiki-from-folder@main
+      with:
+    #   These are the default values. You do not need to include them in your workflow file unless you want to change them.
+        folders:
+        - docs
+        - wiki
+        sidebar: true
+        prefix-files-with-directory: false
+        branch-to-link-to: main # This defaults to the default branch of the repository, which is usually main, but could be anything
+        clear-wiki: true
+        edit-warning: true
 ```
 
 You can read more about the available options [here](/quicklysign/wiki-from-folder/wiki).
