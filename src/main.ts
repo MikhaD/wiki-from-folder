@@ -40,7 +40,12 @@ export default async function main(inputs: MainInputs) {
 		await wiki; // wait for the wiki to clone
 
 		if (inputs.clearWiki) {
-			await exec.exec("rm", ["-r", path.join(tempDir, "*")]);
+			ac.info("#################### Before Clearing ####################");
+			await exec.exec("ls", ["-l"]);
+			await exec.exec("rm", ["-rf", path.join(tempDir, "*")]);
+			ac.info("#################@### After Clearing ####################");
+
+			await exec.exec("ls", ["-l"]);
 		}
 		// Create the directory for the generated files if it doesn't exist
 		fs.mkdirSync(path.join(tempDir, inputs.generatedFilesDir), { recursive: true });
