@@ -60,8 +60,12 @@ export default async function main(inputs: MainInputs) {
 		}
 
 		process.chdir(tempDir);
-		await gh.configureGit();
-		await gh.commitAndPush(["."], ":memo: updated wiki");
+		if (await exec.exec("git", ["--diff", "--exit-code"])) {
+			await gh.configureGit();
+			await gh.commitAndPush(["."], ":memo: updated wiki");
+		} else {
+			ac.info("No documentation changes detected, skipping push");
+		}
 	} catch (e) {
 		ac.error(e as string);
 		ac.setFailed("Action failed");

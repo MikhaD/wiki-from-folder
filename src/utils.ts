@@ -146,8 +146,8 @@ export function formatLocalLink(link: string, repo: string, branchToLinkTo: stri
 			// let fileName = path.basename(url);
 			// This is a link to another wiki page
 			if (extensions.includes(path.extname(link))) {
-				console.log("newPath", newPath);
-				console.log("currentDir", currentDir);
+				console.log("newPath", newPath, highestLevelDir(newPath));
+				console.log("currentDir", currentDir, highestLevelDir(currentDir));
 				currentDir = path.join(currentDir, path.dirname(link));
 				let file = path.basename(link);
 				file = standardizeFileName(file, prefixWithDir ? currentDir : undefined);

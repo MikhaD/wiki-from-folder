@@ -7,9 +7,9 @@ description: >-
 inputs:
   folders:
     description: >-
-      The directory or list of folders to generate the wiki from. Default is docs. If you wish to
-      include multiple directories, separate them with a comma (docs, adr etc.).
-    default: "docs"
+      The directory or list of folders to generate the wiki from. Default is wiki. If you wish to
+      include multiple directories, separate them with a comma (wiki, docs etc.).
+    default: "wiki"
   sidebar:
     description: >-
       Whether or not you wish to generate a custom sidebar with categories based on the

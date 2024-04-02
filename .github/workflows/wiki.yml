@@ -3,7 +3,9 @@ name: Generate Wiki
 on:
   push:
     branches: [main]
-
+    # paths:
+    #   - docs/**
+    #   - .github/workflows/wiki.yml
 
 
 jobs:
