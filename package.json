@@ -1,6 +1,6 @@
 {
 	"name": "wiki-from-folder",
-	"version": "0.0.1",
+	"version": "1.0.0",
 	"description": "A github action that creates a wiki from one or more folders of markdown files, with the option to generate a custom sidebar from the directory structure of the source files.",
 	"main": "dist/index.js",
 	"type": "module",

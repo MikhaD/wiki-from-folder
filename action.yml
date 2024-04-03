@@ -1,8 +1,11 @@
-name: Generate Wiki
+name: Wiki from folder
 author: MikhaD
 description: >-
-  Create a wiki from one or more folders of markdown files, with the option to generate a custom
-  sidebar from th =e directory structure of the source files.
+  Create a wiki from 1 or more folders of MD files, & optionally generate a sidebar from the file
+  structure of the src folders
+branding:
+  icon: book-open
+  color: gray-dark
 
 inputs:
   folders:

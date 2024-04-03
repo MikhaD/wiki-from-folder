@@ -27,3 +27,9 @@
 - Rework formatLinksInFile so it is less reliant on all the parameters of formatLocalLinks
 - Add more async for reading and writing files
 
+# Before the next version
+- Figure out if links to folders are treated correctly
+- Make sure the directory path being turned into part of the title is processed properly (spaces, underscores, etc.)
+- Need an ignore list: There is a possibility that a folder will contain a file named _sidebar.md, which should not be included in the sidebar, but will cause the empty folder to be included in the sidebar
+- Tidy up readme
+- End to end tests (only run if the tests are running in the github action)
