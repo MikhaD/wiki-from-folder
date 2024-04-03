@@ -6,8 +6,7 @@
 	"type": "module",
 	"scripts": {
 		"test": "NODE_OPTIONS='--no-warnings --loader ts-node/esm' c8 mocha",
-		"build": "tsc -p tsconfig.json",
-		"package": "esbuild src/index.ts --bundle --platform=node --target=node20 --outfile=dist/bundle.cjs",
+		"build": "esbuild src/index.ts --bundle --platform=node --target=node20 --outfile=dist/bundle.cjs",
 		"coverage": "NODE_OPTIONS='--no-warnings --loader ts-node/esm' c8 -r json-summary mocha"
 	},
 	"repository": {
@@ -36,6 +35,7 @@
 		"esbuild": "^0.20.2",
 		"mocha": "^10.3.0",
 		"sinon": "^17.0.1",
+		"ts-node": "^10.9.2",
 		"typescript": "^5.4.3"
 	},
 	"mocha": {

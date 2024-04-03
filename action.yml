@@ -15,7 +15,7 @@ inputs:
       Whether or not you wish to generate a custom sidebar with categories based on the
       subdirectories of the input directory. Defaults to true.
     default: "true"
-  prefix-files-with-directory:
+  prefix-files-with-dir:
     description: >-
       Whether or not to prefix file names with the directory they are in. This can be useful if you
       have multiple files with the same name in different directories, as github wikis completely
@@ -47,12 +47,26 @@ inputs:
     description: Could this be the issue?
     required: true
     default: ${{ github.server_url }}
-  generated-files-directory:
+  generated-files-dir:
     description: >-
       The directory in the wiki repository to store the generated files in. Defaults to generated.
       This is useful because it allows you to keep the generated files separate from any other files
       in the wiki, such as those created by users.
     default: "generated"
+  sections-open-depth:
+    description: >-
+      The depth of the sidebar sections to be open by default. Defaults to 1. This means that all
+      top level sections will be open, but any subsections will be closed. Setting this to 0 will
+      close all sections by default. Setting this to -1 will open all sections by default.
+    default: "1"
+  make-wiki-dirs-sections:
+    description: >-
+      Whether or not to make the directories the wiki is being generated from into sections in the
+      sidebar. Defaults to false. If this is true and sidebar is true, if the wiki is being created
+      from a directory called wiki, the sidebar will have a section called wiki with all the files
+      from that directory in it. If this is false and sidebar is true, the files in the root of wiki
+      will be in the root of the sidebar.
+    default: "false"
 
 runs:
   using: node20

@@ -236,3 +236,33 @@ export function centerText(text: string, width: number, fill = " ") {
 	}
 	return padding + text + padding;
 }
+
+/**
+ * Parse a string as a section depth value. If the string is not a number, 0 will be returned. If
+ * the number is -1, or any negative number, Number.MAX_VALUE will be returned.
+ * @param val - The string to format as a section depth value.
+ * @param addOneIfPositive - If true, 1 will be added to the depth if it is positive.
+ */
+export function formatSectionDepth(val: string, addOneIfPositive?: boolean) {
+	const depth = parseInt(val);
+	if (isNaN(depth)) {
+		return 0;
+	}
+	if (depth < 0) {
+		return Number.MAX_VALUE;
+	}
+	if (addOneIfPositive) {
+		return depth + 1;
+	}
+	return depth;
+}
+
+/**
+ * Count the number of directories in the path. If the path includes a file name at the end, that
+ * will be counted as part of the depth. Therefore the depth of `docs/file.md` is 2.
+ * @param path - The path to find the depth of.
+ * @returns The depth of the path.
+ */
+export function pathDepth(path: string) {
+	return path.replace(/\/$|^\//g, "").split("/").length;
+}

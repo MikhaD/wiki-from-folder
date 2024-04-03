@@ -3,46 +3,62 @@ import { expect } from "chai";
 
 describe("SidebarBuilder", () => {
 
-	it("opening sections", () => {
-		let sb = new SidebarBuilder("owner/repo", false);
-		sb.openSection("Heading", false);
-		sb.closeSection();
-		expect(sb.dumps()).to.equal([
-			"<details>",
-			"<summary>Heading</summary>",
-			"",
-			"</details>",
-		].join("\n"));
-
-		sb = new SidebarBuilder("owner/repo", false);
-		sb.openSection("Heading", true);
-		sb.closeSection();
-		expect(sb.dumps()).to.equal([
-			"<details>",
-			"<summary><strong>Heading</strong></summary>",
-			"",
-			"</details>",
-		].join("\n"));
-
-		sb = new SidebarBuilder("owner/repo", false);
-		sb.openSection("Heading", false, "file.md");
-		sb.closeSection();
-		expect(sb.dumps()).to.equal([
-			"<details>",
-			"<summary><a href=\"/owner/repo/wiki/file\">Heading</a></summary>",
-			"",
-			"</details>",
-		].join("\n"));
-
-		sb = new SidebarBuilder("owner/repo", false);
-		sb.openSection("Heading", true, "file.md");
-		sb.closeSection();
-		expect(sb.dumps()).to.equal([
-			"<details>",
-			"<summary><a href=\"/owner/repo/wiki/file\"><strong>Heading</strong></a></summary>",
-			"",
-			"</details>",
-		].join("\n"));
+	describe("opening sections", () => {
+		it("regular", () => {
+			let sb = new SidebarBuilder("owner/repo", false);
+			sb.openSection("Heading", false);
+			sb.closeSection();
+			expect(sb.dumps()).to.equal([
+				"<details>",
+				"<summary>Heading</summary>",
+				"",
+				"</details>",
+			].join("\n"));
+		});
+		it("bold", () => {
+			let sb = new SidebarBuilder("owner/repo", false);
+			sb.openSection("Heading", true);
+			sb.closeSection();
+			expect(sb.dumps()).to.equal([
+				"<details>",
+				"<summary><strong>Heading</strong></summary>",
+				"",
+				"</details>",
+			].join("\n"));
+		});
+		it("link", () => {
+			let sb = new SidebarBuilder("owner/repo", false);
+			sb.openSection("Heading", false, false, "file.md");
+			sb.closeSection();
+			expect(sb.dumps()).to.equal([
+				"<details>",
+				"<summary><a href=\"/owner/repo/wiki/file\">Heading</a></summary>",
+				"",
+				"</details>",
+			].join("\n"));
+		});
+		it("open", () => {
+			let sb = new SidebarBuilder("owner/repo", false);
+			sb.openSection("Heading", false, true);
+			sb.closeSection();
+			expect(sb.dumps()).to.equal([
+				"<details open>",
+				"<summary>Heading</summary>",
+				"",
+				"</details>",
+			].join("\n"));
+		});
+		it("combined", () => {
+			let sb = new SidebarBuilder("owner/repo", false);
+			sb.openSection("Heading", true, true, "file.md");
+			sb.closeSection();
+			expect(sb.dumps()).to.equal([
+				"<details open>",
+				"<summary><a href=\"/owner/repo/wiki/file\"><strong>Heading</strong></a></summary>",
+				"",
+				"</details>",
+			].join("\n"));
+		});
 	});
 
 	it("closing sections", () => {
@@ -101,7 +117,7 @@ describe("SidebarBuilder", () => {
 	it("nested sections", () => {
 		let sb = new SidebarBuilder("owner/repo", false);
 		sb.openSection("Heading", true);
-		sb.openSection("Subheading", false, "file0.md");
+		sb.openSection("Subheading", false, false, "file0.md");
 		sb.addLink("Link 1", "file1.md");
 		sb.addLink("Link 2", "file2");
 		sb.addLink("Link 3", "file3.markdown");
@@ -151,7 +167,7 @@ describe("SidebarBuilder", () => {
 	it("do not edit warning", () => {
 		let sb = new SidebarBuilder("owner/repo", true);
 		sb.openSection("Heading", true);
-		sb.openSection("Subheading", false, "file0.md");
+		sb.openSection("Subheading", false, false, "file0.md");
 		sb.addLink("Link 1", "file1.md");
 		sb.addLink("Link 2", "file2");
 		sb.addLink("Link 3", "file3.markdown");

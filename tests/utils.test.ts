@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { EMAIL_REGEX, formatAsList, formatLinksInFile, formatLocalLink, headerFromFileName, highestLevelDir, isLocalUrl, parseDirectoryContents, StripName, standardizeFileName, wikiURL, centerText, createEditWarning } from "../src/utils.js";
+import { EMAIL_REGEX, formatAsList, formatLinksInFile, formatLocalLink, headerFromFileName, highestLevelDir, isLocalUrl, parseDirectoryContents, StripName, standardizeFileName, wikiURL, centerText, createEditWarning, formatSectionDepth } from "../src/utils.js";
 import sinon from "sinon";
 import fs from "fs";
 import ac from "@actions/core";
@@ -445,6 +445,29 @@ This is [some][def_1] markdown [text][def_2] that [is][def_3] going [to][def_4] 
 				"<!------------------------------------------------------------------------->",
 				"",
 			].join("\n"));
+		});
+	});
+	describe("formatSectionDepth", () => {
+		it("should format positive integers", () => {
+			expect(formatSectionDepth("0")).to.equal(0);
+			expect(formatSectionDepth("1")).to.equal(1);
+			expect(formatSectionDepth("2")).to.equal(2);
+			expect(formatSectionDepth("100")).to.equal(100);
+			expect(formatSectionDepth("100", true)).to.equal(101);
+		});
+		it("should format negative integers", () => {
+			expect(formatSectionDepth("-1")).to.equal(Number.MAX_VALUE);
+			expect(formatSectionDepth("-2")).to.equal(Number.MAX_VALUE);
+			expect(formatSectionDepth("-1.8")).to.equal(Number.MAX_VALUE);
+			expect(formatSectionDepth("-100")).to.equal(Number.MAX_VALUE);
+			expect(formatSectionDepth("-100", true)).to.equal(Number.MAX_VALUE);
+		});
+		it("should format non-integers", () => {
+			expect(formatSectionDepth("1.8")).to.equal(1);
+			expect(formatSectionDepth(".9")).to.equal(0);
+			expect(formatSectionDepth("")).to.equal(0);
+			expect(formatSectionDepth("a")).to.equal(0);
+			expect(formatSectionDepth("a", true)).to.equal(0);
 		});
 	});
 });

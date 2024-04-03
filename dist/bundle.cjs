@@ -28496,6 +28496,22 @@ function centerText(text4, width, fill = " ") {
   }
   return padding + text4 + padding;
 }
+function formatSectionDepth(val, addOneIfPositive) {
+  const depth = parseInt(val);
+  if (isNaN(depth)) {
+    return 0;
+  }
+  if (depth < 0) {
+    return Number.MAX_VALUE;
+  }
+  if (addOneIfPositive) {
+    return depth + 1;
+  }
+  return depth;
+}
+function pathDepth(path4) {
+  return path4.replace(/\/$|^\//g, "").split("/").length;
+}
 
 // src/git_helpers.ts
 var import_exec = __toESM(require_exec(), 1);
@@ -28538,7 +28554,7 @@ var import_fs2 = __toESM(require("fs"), 1);
 
 // src/SidebarBuilder.ts
 var SidebarBuilder = class _SidebarBuilder {
-  static INDENT = "&nbsp;";
+  static INDENT = "";
   repo;
   lines;
   sectionsOpen;
@@ -28565,8 +28581,8 @@ var SidebarBuilder = class _SidebarBuilder {
   formatLink(title, fileToLinkTo) {
     return `<a href="${wikiURL(fileToLinkTo, this.repo)}">${title}</a>`;
   }
-  openSection(title, bold, fileToLinkTo) {
-    this.addLine("<details>");
+  openSection(title, bold, open = false, fileToLinkTo) {
+    this.addLine(open ? "<details open>" : "<details>");
     this.sectionsOpen += 1;
     if (bold) {
       title = `<strong>${title}</strong>`;
@@ -28667,8 +28683,10 @@ function processFiles(dir, tempDir, inputs2, sidebar) {
   return __processFiles(dir, tempDir, inputs2);
 }
 function __processFiles(dir, tempDir, inputs2, sb) {
-  if (sb && dir.path && dir.totalFiles > 0) {
-    sb.openSection(import_path2.default.basename(dir.path), true);
+  const pathDepth2 = pathDepth(dir.path);
+  if (sb && dir.path && dir.totalFiles > 0 && (inputs2.makeWikiDirsSections || pathDepth2 > 1)) {
+    const openSection = pathDepth2 <= inputs2.sectionsOpenDepth;
+    sb.openSection(import_path2.default.basename(dir.path), true, openSection);
   }
   for (const file of dir.files) {
     const formattedFileName = standardizeFileName(file.name, inputs2.prefixFilesWithDir ? dir.path : void 0);
@@ -28699,7 +28717,7 @@ function __processFiles(dir, tempDir, inputs2, sb) {
       sb = __processFiles(sub_dir, tempDir, inputs2);
     }
   }
-  if (sb && dir.path && dir.totalFiles > 0) {
+  if (sb && dir.path && dir.totalFiles > 0 && (inputs2.makeWikiDirsSections || pathDepth2 > 1)) {
     sb.closeSection();
   }
   return sb;
@@ -28710,7 +28728,7 @@ var import_core3 = __toESM(require_core(), 1);
 var inputs = {
   folders: import_core3.default.getMultilineInput("folders").map((dir) => import_path3.default.join(dir, "/")),
   sidebar: import_core3.default.getBooleanInput("sidebar"),
-  prefixFilesWithDir: import_core3.default.getBooleanInput("prefix-files-with-directory"),
+  prefixFilesWithDir: import_core3.default.getBooleanInput("prefix-files-with-dir"),
   sidebarFileTypes: [".md", ".markdown"],
   // sidebarFileTypes:	utils.formatAsList(ac.getInput("sidebar-file-types")).map((s) => {
   // 						if (!s.startsWith(".")) s = `.${s}`;
@@ -28721,7 +28739,9 @@ var inputs = {
   editWarning: import_core3.default.getBooleanInput("edit-warning"),
   host: import_core3.default.getInput("host"),
   repo: process.env.GITHUB_REPOSITORY,
-  generatedFilesDir: import_core3.default.getInput("generated-files-directory")
+  generatedFilesDir: import_core3.default.getInput("generated-files-dir"),
+  makeWikiDirsSections: import_core3.default.getBooleanInput("make-wiki-dirs-sections"),
+  sectionsOpenDepth: formatSectionDepth(import_core3.default.getInput("sections-open-depth"), !import_core3.default.getBooleanInput("make-wiki-dirs-sections"))
 };
 process.env.GH_TOKEN = import_core3.default.getInput("token");
 main(inputs);

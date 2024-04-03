@@ -103,8 +103,10 @@ export function processFiles(dir: DirectoryContents, tempDir: string, inputs: Ma
 }
 
 function __processFiles(dir: DirectoryContents, tempDir: string, inputs: MainInputs, sb?: SidebarBuilder) {
-	if (sb && dir.path && dir.totalFiles > 0) {
-		sb.openSection(path.basename(dir.path), true);
+	const pathDepth = utils.pathDepth(dir.path);
+	if (sb && dir.path && dir.totalFiles > 0 && (inputs.makeWikiDirsSections || pathDepth > 1)) {
+		const openSection = pathDepth <= inputs.sectionsOpenDepth;
+		sb.openSection(path.basename(dir.path), true, openSection);
 	}
 	for (const file of dir.files) {
 		const formattedFileName = utils.standardizeFileName(file.name, inputs.prefixFilesWithDir ? dir.path : undefined);
@@ -135,7 +137,7 @@ function __processFiles(dir: DirectoryContents, tempDir: string, inputs: MainInp
 			sb = __processFiles(sub_dir, tempDir, inputs);
 		}
 	}
-	if (sb && dir.path && dir.totalFiles > 0) {
+	if (sb && dir.path && dir.totalFiles > 0 && (inputs.makeWikiDirsSections || pathDepth > 1)) {
 		sb.closeSection();
 	}
 	return sb;

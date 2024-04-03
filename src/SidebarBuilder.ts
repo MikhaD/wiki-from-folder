@@ -1,7 +1,7 @@
 import { wikiURL, createEditWarning } from "./utils.js";
 
 export default class SidebarBuilder {
-	public static readonly INDENT = "&nbsp;";
+	public static readonly INDENT = "";
 
 	private repo: string;
 	private lines: string[];
@@ -38,17 +38,19 @@ export default class SidebarBuilder {
 	 * Open a new section in the sidebar.
 	 * @param title The title of the section (details summary).
 	 * @param bold - Whether to make the title bold.
+	 * @param open - Whether the section should be open by default.
 	 */
-	public openSection(title: string, bold: boolean): void;
+	public openSection(title: string, bold: boolean, open?: boolean): void;
 	/**
 	 * Open a new section in the sidebar which can be expanded or clicked to go to a file.
 	 * @param title The title of the section (details summary).
 	 * @param bold - Whether to make the title bold.
+	 * @param open - Whether the section should be open by default.
 	 * @param fileToLinkTo - The file to link to when the section is clicked.
 	 */
-	public openSection(title: string, bold: boolean, fileToLinkTo: string): void;
-	public openSection(title: string, bold: boolean, fileToLinkTo?: string) {
-		this.addLine("<details>");
+	public openSection(title: string, bold: boolean, open: boolean, fileToLinkTo: string): void;
+	public openSection(title: string, bold: boolean, open = false, fileToLinkTo?: string) {
+		this.addLine(open ? "<details open>" : "<details>");
 		this.sectionsOpen += 1;
 		if (bold) {
 			title = `<strong>${title}</strong>`;
