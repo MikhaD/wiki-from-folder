@@ -1,5 +1,4 @@
 import ac from "@actions/core";
-import exec from "@actions/exec";
 import io from "@actions/io";
 import * as utils from "./utils.js";
 import * as gh from "./git_helpers.js";
