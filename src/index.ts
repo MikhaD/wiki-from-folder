@@ -15,7 +15,7 @@ const inputs = {
 	repo: ac.getInput("repo")!,
 	generatedFilesDir: ac.getInput("generated-files-dir"),
 	makeSrcDirsSections: ac.getBooleanInput("make-src-dirs-sections"),
-	sectionsOpenDepth: formatSectionDepth(ac.getInput("sections-open-depth"), !ac.getBooleanInput("make-wiki-dirs-sections")),
+	sectionsOpenDepth: formatSectionDepth(ac.getInput("sections-open-depth"), !ac.getBooleanInput("make-src-dirs-sections")),
 };
 
 process.env.GH_TOKEN = ac.getInput("token");
