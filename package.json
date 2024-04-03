@@ -7,8 +7,9 @@
 	"scripts": {
 		"test": "NODE_OPTIONS='--no-warnings --loader ts-node/esm' c8 mocha",
 		"build": "tsc -p tsconfig.json",
-		"package": "esbuild src/index.ts --bundle --sourcemap --platform=node --format=esm --target=node20 --outfile=dist/index.js",
-		"coverage": "NODE_OPTIONS='--no-warnings --loader ts-node/esm' c8 -r json-summary mocha"
+		"package": "esbuild src/index.ts --bundle --sourcemap --platform=node --target=node20 --outfile=dist/index.cjs",
+		"coverage": "NODE_OPTIONS='--no-warnings --loader ts-node/esm' c8 -r json-summary mocha",
+		"rollup": "rollup -c"
 	},
 	"repository": {
 		"type": "git",
@@ -27,6 +28,8 @@
 	},
 	"homepage": "https://github.com/quicklysign/wiki-from-folder#readme",
 	"devDependencies": {
+		"@rollup/plugin-node-resolve": "^15.2.3",
+		"@rollup/plugin-typescript": "^11.1.6",
 		"@types/chai": "^4.3.13",
 		"@types/mocha": "^10.0.6",
 		"@types/node": "^20.11.30",
@@ -34,13 +37,12 @@
 		"c8": "^9.1.0",
 		"chai": "^5.1.0",
 		"esbuild": "^0.20.2",
-		"mdast-util-from-markdown": "^2.0.0",
-		"mdast-util-to-markdown": "^2.1.0",
 		"mocha": "^10.3.0",
+		"rollup": "^4.14.0",
 		"sinon": "^17.0.1",
 		"ts-node": "^10.9.2",
-		"typescript": "^5.4.3",
-		"unist-util-visit": "^5.0.0"
+		"tslib": "^2.6.2",
+		"typescript": "^5.4.3"
 	},
 	"mocha": {
 		"require": [
@@ -71,6 +73,9 @@
 	"dependencies": {
 		"@actions/core": "^1.10.1",
 		"@actions/exec": "^1.1.1",
-		"@actions/io": "^1.1.3"
+		"@actions/io": "^1.1.3",
+		"mdast-util-from-markdown": "^2.0.0",
+		"mdast-util-to-markdown": "^2.1.0",
+		"unist-util-visit": "^5.0.0"
 	}
 }
