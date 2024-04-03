@@ -3,9 +3,9 @@ name: Generate Wiki
 on:
   push:
     branches: [main]
-    # paths:
-    #   - docs/**
-    #   - .github/workflows/wiki.yml
+    paths:
+      - docs/**
+      - .github/workflows/wiki.yml
 
 
 jobs:
@@ -20,5 +20,4 @@ jobs:
         uses: ./
         with:
             folders: docs
-            prefix-files-with-directory: false
             clear-wiki: true

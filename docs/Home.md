@@ -6,7 +6,7 @@ For usage instructions see the [readme](../README.md).
 
 ## Options
 ### `folders`
-> default: `docs`
+> default: `wiki`
 
 The directory or list of folders to generate the wiki from. If you wish to include multiple directories, separate them with a comma (docs, adr etc.).
 
