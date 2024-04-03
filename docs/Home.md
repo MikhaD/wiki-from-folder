@@ -64,16 +64,3 @@ Whether or not to make the directories the wiki is being generated from into sec
 > default: `${{ github.repository }}`
 
 The repository to generate the wiki in. Defaults to the repository the action is running in. Only set this to a different repository if you want to generate a wiki in a different repository. If you do this, you will need to set the token input to a token with write access to the repository.
-
-
-## Desired future features
-- Option to not clear generated pages + option to clear user created pages (need to clear generated pages for deleting pages to sync).
-- Option to include front-matter in the markdown files to specify properties like the sidebar title etc.
-- Option to create pull request to main repo if there are documents that have been created using github's browser interface for creating wiki pages (see [gollum](https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#gollum)).
-	- When processing files add front-matter with the original file path
-- Option to include additional stuff at the top and bottom of the sidebar
-- option to generate index files for directories that have links to all the included files and sub indexes for subdirectories
-- Rework formatLinksInFile so it is less reliant on all the parameters of formatLocalLinks
-- Add more async for reading and writing files
-- Add the ability to detect when a file links to another markdown file in any of the folders being published to the wiki
-- Work with other types of files, not just markdown.
