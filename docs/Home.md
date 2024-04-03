@@ -48,8 +48,8 @@ Whether or not to include a warning comment at the top of each generated file te
 - Work with other types of files, not just markdown.
 
 ### Link testing
-[index.ts](../src/index.ts)
-[index.ts 10-13](../src/index.ts#L10-L13)
-[readme](../README.md)
-[features](features/features.md)
-[/features](/features/features.md)
+- [index.ts](../src/index.ts)
+- [index.ts 10-13](../src/index.ts#L10-L13)
+- [readme](../README.md)
+- [features](features/features.md)
+- [/features](/features/features.md)

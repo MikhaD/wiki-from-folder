@@ -7,9 +7,8 @@
 	"scripts": {
 		"test": "NODE_OPTIONS='--no-warnings --loader ts-node/esm' c8 mocha",
 		"build": "tsc -p tsconfig.json",
-		"package": "esbuild src/index.ts --bundle --sourcemap --platform=node --target=node20 --outfile=dist/index.cjs",
-		"coverage": "NODE_OPTIONS='--no-warnings --loader ts-node/esm' c8 -r json-summary mocha",
-		"rollup": "rollup -c"
+		"package": "esbuild src/index.ts --bundle --platform=node --target=node20 --outfile=dist/bundle.cjs",
+		"coverage": "NODE_OPTIONS='--no-warnings --loader ts-node/esm' c8 -r json-summary mocha"
 	},
 	"repository": {
 		"type": "git",
@@ -28,8 +27,6 @@
 	},
 	"homepage": "https://github.com/quicklysign/wiki-from-folder#readme",
 	"devDependencies": {
-		"@rollup/plugin-node-resolve": "^15.2.3",
-		"@rollup/plugin-typescript": "^11.1.6",
 		"@types/chai": "^4.3.13",
 		"@types/mocha": "^10.0.6",
 		"@types/node": "^20.11.30",
@@ -38,10 +35,7 @@
 		"chai": "^5.1.0",
 		"esbuild": "^0.20.2",
 		"mocha": "^10.3.0",
-		"rollup": "^4.14.0",
 		"sinon": "^17.0.1",
-		"ts-node": "^10.9.2",
-		"tslib": "^2.6.2",
 		"typescript": "^5.4.3"
 	},
 	"mocha": {
