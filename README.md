@@ -1,5 +1,6 @@
 # wiki-from-folder Action
-![[Tests Passing](https://github.com/quicklysign/wiki-from-folder/actions/workflows/coverage.yml/badge.svg)](https://github.com/quicklysign/wiki-from-folder/actions/workflows/coverage.yml)
+[![Tests Passing](https://github.com/quicklysign/wiki-from-folder/actions/workflows/coverage.yml/badge.svg)](https://github.com/quicklysign/wiki-from-folder/actions/workflows/coverage.yml)
+[![Generating Wiki](https://github.com/quicklysign/wiki-from-folder/actions/workflows/wiki.yml/badge.svg)](https://github.com/quicklysign/wiki-from-folder/actions/workflows/wiki.yml)
 
 This is a github action that creates a wiki from one or more folders of markdown files, with the option to generate a custom sidebar from the directory structure of the source files.
 
