@@ -8,17 +8,13 @@ const inputs = {
 	sidebar: ac.getBooleanInput("sidebar"),
 	prefixFilesWithDir: ac.getBooleanInput("prefix-files-with-dir"),
 	sidebarFileTypes: [".md", ".markdown"],
-	// sidebarFileTypes:	utils.formatAsList(ac.getInput("sidebar-file-types")).map((s) => {
-	// 						if (!s.startsWith(".")) s = `.${s}`;
-	// 						return s.toLowerCase();
-	// 					}),
 	branchToLinkTo: ac.getInput("branch-to-link-to"),
 	clearWiki: ac.getBooleanInput("clear-wiki"),
 	editWarning: ac.getBooleanInput("edit-warning"),
 	host: ac.getInput("host"),
-	repo: process.env.GITHUB_REPOSITORY!,
+	repo: ac.getInput("repo")!,
 	generatedFilesDir: ac.getInput("generated-files-dir"),
-	makeWikiDirsSections: ac.getBooleanInput("make-wiki-dirs-sections"),
+	makeSrcDirsSections: ac.getBooleanInput("make-src-dirs-sections"),
 	sectionsOpenDepth: formatSectionDepth(ac.getInput("sections-open-depth"), !ac.getBooleanInput("make-wiki-dirs-sections")),
 };
 

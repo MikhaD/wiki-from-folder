@@ -4,4 +4,4 @@
 - [readme](../../../README.md)
 - [features](../features/features.md)
 - [/features](../features/features.md)
-- [other test (1)](./test%201.md.md)
+- [other test (1)](./test%201.md)

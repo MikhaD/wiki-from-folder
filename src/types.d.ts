@@ -20,5 +20,5 @@ type MainInputs = {
 	host: string,
 	generatedFilesDir: string,
 	sectionsOpenDepth: number,
-	makeWikiDirsSections: boolean,
+	makeSrcDirsSections: boolean,
 };

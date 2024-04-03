@@ -15,7 +15,7 @@ The directory or list of folders to generate the wiki from. If you wish to inclu
 
 Whether or not you wish to generate a custom sidebar with categories based on the subdirectories of the input directory.
 
-### `prefix-files-with-directory`
+### `prefix-files-with-dir`
 > default: `false`
 
 Whether or not to prefix file names with the directory they are in. This can be useful if you have multiple files with the same name in different directories, as github wikis completely ignore subdirectories and flatten everything out. Prefixed files will be named dir|filename.ext.
@@ -34,6 +34,37 @@ Whether or not to clear the wiki before generating the new files. This is useful
 > default: `true`
 
 Whether or not to include a warning comment at the top of each generated file telling the viewer not to edit it and pointing them to the source file to edit instead.
+
+### `token`
+> default: `${{ github.token }}`
+
+The token used to authenticate with the repository. You only need to set this if you want to push to a wiki in a different repository, in which case this should be set to a PAT.
+
+### `host`
+> default: `${{ github.server_url }}`
+
+The host the wiki is hosted on. Defaults to the server URL of the repository. Typically https://github.com.
+
+### `generated-files-dir`
+> default: `generated`
+
+The directory in the wiki repository to store the generated files in. This is useful because it allows you to keep the generated files separate from any other files in the wiki, such as those created by users.
+
+### `sections-open-depth`
+> default: `1`
+
+The depth of the sidebar sections to be open by default. Setting it to 1 for example means that all top level sections will be open, but any subsections will be closed. 0 will close all sections by default. -1 will open all sections by default.
+
+### `make-src-dirs-sections`
+> default: `false`
+
+Whether or not to make the directories the wiki is being generated from into sections in the sidebar. If this is true and sidebar is true, if the wiki is being created from a directory called wiki, the sidebar will have a section called wiki with all the files from that directory in it. If this is false and sidebar is true, the files in the root of wiki will be in the root of the sidebar.
+
+### `repo`
+> default: `${{ github.repository }}`
+
+The repository to generate the wiki in. Defaults to the repository the action is running in. Only set this to a different repository if you want to generate a wiki in a different repository. If you do this, you will need to set the token input to a token with write access to the repository.
+
 
 ## Desired future features
 - Option to not clear generated pages + option to clear user created pages (need to clear generated pages for deleting pages to sync).

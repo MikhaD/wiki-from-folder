@@ -6,7 +6,7 @@
 	"type": "module",
 	"scripts": {
 		"test": "NODE_OPTIONS='--no-warnings --loader ts-node/esm' c8 mocha",
-		"build": "esbuild src/index.ts --bundle --platform=node --target=node20 --outfile=dist/bundle.cjs",
+		"build": "esbuild src/index.ts --bundle --minify --platform=node --target=node20 --outfile=dist/bundle.cjs",
 		"coverage": "NODE_OPTIONS='--no-warnings --loader ts-node/esm' c8 -r json-summary mocha"
 	},
 	"repository": {

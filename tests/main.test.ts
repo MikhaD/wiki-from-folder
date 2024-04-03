@@ -89,7 +89,7 @@ describe("processFiles", () => {
 				host: "https://github.com",
 				generatedFilesDir: "generated",
 				sectionsOpenDepth: 0,
-				makeWikiDirsSections: false,
+				makeSrcDirsSections: false,
 			};
 
 			const sb = processFiles(dir, tempDir, data, true);
@@ -146,7 +146,7 @@ describe("processFiles", () => {
 				host: "https://github.com",
 				generatedFilesDir: "generated",
 				sectionsOpenDepth: Number.MAX_VALUE,
-				makeWikiDirsSections: false,
+				makeSrcDirsSections: false,
 			};
 
 			const sb = processFiles(dir, tempDir, data, true);
@@ -198,7 +198,7 @@ describe("processFiles", () => {
 				host: "https://github.com",
 				generatedFilesDir: "generated",
 				sectionsOpenDepth: 2,
-				makeWikiDirsSections: false,
+				makeSrcDirsSections: false,
 			};
 
 			const sb = processFiles(dir, tempDir, data, true);
@@ -242,7 +242,7 @@ describe("processFiles", () => {
 			expect(writeFileSyncStub.callCount).to.equal(11);
 			expect(readFileSyncStub.callCount).to.equal(11);
 		});
-		it("with makeWikiDirsSections true", () => {
+		it("with makeSrcDirsSections true", () => {
 			const data: MainInputs = {
 				repo: "owner/repo",
 				sidebar: true,
@@ -255,7 +255,7 @@ describe("processFiles", () => {
 				host: "https://github.com",
 				generatedFilesDir: "generated",
 				sectionsOpenDepth: 1,
-				makeWikiDirsSections: true,
+				makeSrcDirsSections: true,
 			};
 
 			const sb = processFiles(dir, tempDir, data, true);
@@ -320,7 +320,7 @@ describe("processFiles", () => {
 					host: "https://github.com",
 					generatedFilesDir: "generated",
 					sectionsOpenDepth: 1,
-					makeWikiDirsSections: false,
+					makeSrcDirsSections: false,
 				};
 
 				expect(processFiles(dir, tempDir, data, false)).to.be.undefined;
@@ -347,7 +347,7 @@ describe("processFiles", () => {
 			host: "https://github.com",
 			generatedFilesDir: "generated",
 			sectionsOpenDepth: 0,
-			makeWikiDirsSections: true,
+			makeSrcDirsSections: true,
 		};
 
 		const dir = {

@@ -39,12 +39,11 @@ inputs:
     default: "true"
   token:
     description: >-
-      The token to use to authenticate with the repository. This is required if you want to push
-      changes to the wiki.
+      The token used to authenticate with the repository. Defaults to `github.token`. You only need to set this if you want to push to a wiki in a different repository, in which case this should be set to a PAT.
     required: true
     default: ${{ github.token }}
   host:
-    description: Could this be the issue?
+    description: The host to use for the wiki. Defaults to the server URL of the repository. Typically https://github.com.
     required: true
     default: ${{ github.server_url }}
   generated-files-dir:
@@ -59,7 +58,7 @@ inputs:
       top level sections will be open, but any subsections will be closed. Setting this to 0 will
       close all sections by default. Setting this to -1 will open all sections by default.
     default: "1"
-  make-wiki-dirs-sections:
+  make-src-dirs-sections:
     description: >-
       Whether or not to make the directories the wiki is being generated from into sections in the
       sidebar. Defaults to false. If this is true and sidebar is true, if the wiki is being created
@@ -67,6 +66,13 @@ inputs:
       from that directory in it. If this is false and sidebar is true, the files in the root of wiki
       will be in the root of the sidebar.
     default: "false"
+  repo:
+    description: >-
+      The repository to generate the wiki in. Defaults to the repository the action is running in.
+      Only set this to a different repository if you want to generate a wiki in a different
+      repository. If you do this, you will need to set the token input to a token with write access
+      to the repository.
+    default: ${{ github.repository }}
 
 runs:
   using: node20
