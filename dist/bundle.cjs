@@ -28538,7 +28538,7 @@ var import_fs2 = __toESM(require("fs"), 1);
 
 // src/SidebarBuilder.ts
 var SidebarBuilder = class _SidebarBuilder {
-  static INDENT = "";
+  static INDENT = "&nbsp;";
   repo;
   lines;
   sectionsOpen;
