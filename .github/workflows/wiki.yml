@@ -9,7 +9,7 @@ on:
 
 
 jobs:
-  update:
+  generate-wiki:
     name: Generate wiki from docs
     runs-on: ubuntu-latest
     steps:
