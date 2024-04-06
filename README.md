@@ -5,7 +5,7 @@
 This is a github action that creates a wiki from one or more folders of markdown files, with the option to generate a custom sidebar from the directory structure of the source files.
 
 ## Features
-More information about the features of this action can be found in the wiki under [feature examples](wiki-from-folder/wiki/features).
+More information about the features of this action can be found in the wiki under <a href="wiki-from-folder/wiki/features">feature examples</a>.
 1. ✅ Generates a GitHub wiki from one or more folders of markdown files.
 1. ✅ Processes the markdown files to ensure that all relative links work correctly after converting to a wiki. See [here](wiki-from-folder/wiki/link-processing) for more info.
 1. ✅ Optionally generates a sidebar from the directory structure of the source files. Each folder will be a section in the sidebar, and each markdown file will be a link in the sidebar.

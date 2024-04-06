@@ -5,8 +5,7 @@
 - Option to clear everything including files created by users elsewhere
 
 ### Front matter options
-- Option to include front-matter in the markdown files to specify properties like the sidebar title etc.
-- Add front matter with original file path to processed files
+- Option to include front-matter in the markdown files to specify properties like the sidebar title etc. This will need to be removed or put in a different format once transformed into a wiki page because front matter becomes visible in wiki pages.
 
 ### PR Repo on changes to wiki
 - Option to create pull request to main repo if there are documents that have been created using github's browser interface for creating wiki pages (see [gollum](https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#gollum)).
