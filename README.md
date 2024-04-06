@@ -19,7 +19,7 @@ If there is a file named `_sidebar.md` in the root of the folder, it will be use
 If you wish to have a custom footer, you can include a file named `_footer.md` in the root of the folder.
 
 ## Usage
-Add a wiki.yml file to your .github/workflows folder containing the following:
+1. Add a wiki.yml file to your .github/workflows folder containing the following:
 ```yaml
 name: Generate Wiki
 
@@ -42,5 +42,7 @@ jobs:
         sidebar: true
         clear-wiki: true
 ```
+1. If you don't have one already, a folder in the root of your repository that will contain the documents you wish to convert to a wiki. In the example above, the folder is named `wiki`.
+1. Go to the wiki tab in your github repository and click the `Create the first page` button. This will create the wiki and allow the action to add pages to it. Without doing this the action will fail because there is no wiki associated with the repository to add pages to.
 
 You can read more about the available options [here](https://github.com/MikhaD/wiki-from-folder/wiki).
