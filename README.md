@@ -1,13 +1,14 @@
 # wiki-from-folder Action
-[![Tests Passing](wiki-from-folder/actions/workflows/coverage.yml/badge.svg)](wiki-from-folder/actions/workflows/coverage.yml)
-[![Generating Wiki](wiki-from-folder/actions/workflows/wiki.yml/badge.svg)](wiki-from-folder/actions/workflows/wiki.yml)
+[![Test Coverage](https://mikhad.github.io/wiki-from-folder/badges/coverage.svg)](https://github.com/MikhaD/wiki-from-folder/actions/workflows/coverage.yml)
+[![Generating Wiki](https://github.com/MikhaD/wiki-from-folder/actions/workflows/wiki.yml/badge.svg)](https://github.com/MikhaD/wiki-from-folder/actions/workflows/wiki.yml)
+[![Release](https://img.shields.io/github/v/release/mikhad/wiki-from-folder)](https://github.com/MikhaD/wiki-from-folder/releases/latest)
 
 This is a github action that creates a wiki from one or more folders of markdown files, with the option to generate a custom sidebar from the directory structure of the source files.
 
 ## Features
-More information about the features of this action can be found in the wiki under <a href="wiki-from-folder/wiki/features">feature examples</a>.
+More information about the features of this action can be found in the wiki under [feature examples](https://github.com/MikhaD/wiki-from-folder/wiki/features).
 1. ✅ Generates a GitHub wiki from one or more folders of markdown files.
-1. ✅ Processes the markdown files to ensure that all relative links work correctly after converting to a wiki. See [here](wiki-from-folder/wiki/link-processing) for more info.
+1. ✅ Processes the markdown files to ensure that all relative links work correctly after converting to a wiki. See [here](https://github.com/MikhaD/wiki-from-folder/wiki/link-processing) for more info.
 1. ✅ Optionally generates a sidebar from the directory structure of the source files. Each folder will be a section in the sidebar, and each markdown file will be a link in the sidebar.
 1. ✅ Optionally prefixes files with directory path in title. Because github wikis flatten directories into a single list of pages, this action provides the option to prefix the title of each page with the path to the file. This will make it easier to navigate the wiki, and prevent naming conflicts between files in different directories.
 1. ✅ Provides the option to clear all existing pages from the wiki before generating the new pages. This is useful if you want to ensure that the wiki is only created from the source files. Any pages created in the GitHub wiki editor will be deleted.
@@ -42,4 +43,4 @@ jobs:
         clear-wiki: true
 ```
 
-You can read more about the available options [here](wiki-from-folder/wiki).
+You can read more about the available options [here](https://github.com/MikhaD/wiki-from-folder/wiki).

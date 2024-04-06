@@ -6,6 +6,7 @@ on:
     paths:
       - "src/**"
       - "tests/**"
+      - ".github/workflows/coverage.yml"
   pull_request:
     branches: [main]
     paths:
@@ -16,11 +17,16 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "21"
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Install
-        run: npm install
+        run: npm ci
+
       - name: Test
         run: npm run test
+
+      - name: Update Coverage Badge
+        # only update the coverage badge if run on the main branch
+        if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+        uses: we-cli/coverage-badge-action@main

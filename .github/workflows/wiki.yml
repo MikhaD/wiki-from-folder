@@ -16,7 +16,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: This action
+      - name: wiki-from-folder
         uses: ./
         with:
             folders: docs
