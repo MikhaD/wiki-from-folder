@@ -27,6 +27,9 @@
 - Rework formatLinksInFile so it is less reliant on all the parameters of formatLocalLinks
 - Add more async for reading and writing files
 
+## Closed list
+- Option to include a list of directories that should always be closed in the sidebar regardless of the `sections-open-depth` setting
+
 # Before the next version
 - Figure out if links to folders are treated correctly
 - Make sure the directory path being turned into part of the title is processed properly (spaces, underscores, etc.)
